@@ -10,46 +10,42 @@
  {
      public function index()
      {
-         return response()->json(Devise::all(), 200);
+        //  return response()->json(Devise::all(), 200);
+
+        if (!Auth::user()->can('create-devise')) {
+            return response()->json(['message' => 'Vous n\'avez pas la permission de créer une devise.'], 403);
+        }
      }
  
 
     public function store(Request $request)
         {
-         
-        if (!Auth::check()) {
-            // try {
-            //     $validated = $request->validate([
-            //         'nom' => 'required|string|max:255',
-            //         'tag' => 'required|string|max:10|unique:devises',
-            //     ]);
+            try {
+                $validated = $request->validate([
+                    'nom' => 'required|string|max:255',
+                    'tag' => 'required|string|max:10|unique:devises',
+                ]);
 
-            //     $devise = Devise::create($validated);
+                $devise = Devise::create($validated);
 
-            //     return response()->json([
-            //         'message' => 'Devise créée avec succès.',
-            //         'data' => $devise
-            //     ], 201);
+                return response()->json([
+                    'message' => 'Devise créée avec succès.',
+                    'data' => $devise
+                ], 201);
 
-            // } catch (\Illuminate\Validation\ValidationException $e) {
-            //     return response()->json([
-            //         'message' => 'Erreur de validation.',
-            //         'errors' => $e->errors()
-            //     ], 422);
+            } catch (\Illuminate\Validation\ValidationException $e) {
+                return response()->json([
+                    'message' => 'Erreur de validation.',
+                    'errors' => $e->errors()
+                ], 422);
 
-            // } catch (\Exception $e) {
-            //     return response()->json([
-            //         'message' => 'Une erreur est survenue lors de la création de la devise.',
-            //         'error' => $e->getMessage()
-            //     ], 500);
-            // }  
-            return "hhe";  
+            } catch (\Exception $e) {
+                return response()->json([
+                    'message' => 'Une erreur est survenue lors de la création de la devise.',
+                    'error' => $e->getMessage()
+                ], 500);
+            }
         }
-
-     
-        return response()->json(['message' => 'Vous devez être connecté pour accéder à cette ressource.'], 401);
-
-        }//Fin store
 
 
  
@@ -93,13 +89,7 @@
                  'message' => 'Une erreur est survenue lors de la mise à jour de la devise.',
                  'error' => $e->getMessage()
              ], 500);
-         } catch (\Throwable $e) {
-            // Gestion des erreurs imprévues
-            return response()->json([
-                'message' => 'Une erreur est survenue lors de la création de la devise.',
-                'error' => $e->getMessage() // Retirer en production pour des raisons de sécurité
-            ], 500);
-        }
+         }
      }
      
  

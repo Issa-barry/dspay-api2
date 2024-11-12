@@ -7,19 +7,37 @@ use Spatie\Permission\Models\Permission;
 
 class PermissionController extends Controller
 {
-    // Créer une permission
+     
+     /**
+     * Crée une nouvelle permission.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function create(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|unique:permissions,name',
+        // Validation de la requête
+        $validated = $request->validate([
+            'name' => 'required|string|max:255|unique:permissions,name',
         ]);
 
-        $permission = Permission::create(['name' => $request->name]);
+        try {
+            // Création de la permission avec le guard 'api'
+            $permission = Permission::create([
+                'name' => $validated['name'],
+                'guard_name' => 'web',  // Utiliser le guard 'api'
+            ]);
 
-        return response()->json([
-            'message' => 'Permission créée avec succès.',
-            'permission' => $permission,
-        ], 201);
+            return response()->json([
+                'message' => 'Permission créée avec succès.',
+                'permission' => $permission
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Erreur lors de la création de la permission.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     // Liste des permissions

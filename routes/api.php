@@ -46,6 +46,14 @@ Route::post('users/{userId}/revoke-role', [RolePermissionController::class, 'rev
 Route::post('users/{userId}/assign-permission', [RolePermissionController::class, 'assignPermission']);// Assigner une permission à un utilisateur
 Route::post('users/{userId}/revoke-permission', [RolePermissionController::class, 'revokePermission']);// Retirer une permission d'un utilisateur
 
-
 Route::post('roles/{roleId}/assign-permissions', [RolePermissionController::class, 'assignPermissionsToRole']);// Assigner une ou plusieurs permissions à un rôle
 Route::post('roles/{roleId}/revoke-permission', [RolePermissionController::class, 'revokePermissionFromRole']);// Retirer une permission d'un rôle
+
+
+// Route::middleware('auth:sanctum')->group(function () {
+    Route::get('devises', [DeviseController::class, 'index']);            
+    Route::post('devises', [DeviseController::class, 'store']);           
+    Route::get('devises/{id}', [DeviseController::class, 'show']);       
+    Route::put('devises/{id}', [DeviseController::class, 'update']);     
+    Route::delete('devises/{id}', [DeviseController::class, 'destroy']);  
+// });
