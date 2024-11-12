@@ -91,6 +91,15 @@ class AuthController extends Controller
         ], 200);
     }
 
+    public function logout(Request $request)
+        {
+            $request->user()->tokens()->delete();
+
+            return response()->json([
+                'message' => 'Déconnecté de tous les appareils.',
+            ], 200);
+        }
+    
     // Vérification de l'email
     public function verifyEmail(Request $request, $id, $hash)
     {
