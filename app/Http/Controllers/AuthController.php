@@ -11,6 +11,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\Auth;
+use Spatie\Permission\Models\Role;
 
 class AuthController extends Controller
 {
@@ -22,6 +23,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
+            'role' => 'required|string|exists:roles,name',  
         ]);
 
         // Si la validation échoue, retourner une erreur
@@ -36,6 +38,11 @@ class AuthController extends Controller
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
             ]);
+
+            // Assigner un rôle par défaut, par exemple "user"
+            $user->assignRole($request->role); // Assurez-vous que ce rôle existe
+
+            // event(new Registered($user));
 
             // Envoi de la notification de vérification de l'email
             $user->sendEmailVerificationNotification();
@@ -91,6 +98,15 @@ class AuthController extends Controller
         ], 200);
     }
 
+    public function logout(Request $request)
+        {
+            $request->user()->tokens()->delete();
+
+            return response()->json([
+                'message' => 'Déconnecté de tous les appareils.',
+            ], 200);
+        }
+    
     // Vérification de l'email
     public function verifyEmail(Request $request, $id, $hash)
     {
@@ -139,7 +155,7 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Mot de passe réinitialisé avec succès.',
             'user' => $user,
-        ], 200);
+        ], 200); 
     }
 
     public function sendResetPasswordLink(Request $request)

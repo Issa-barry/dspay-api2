@@ -28,26 +28,27 @@ class UserController extends Controller
         return response()->json($user);
     }
 
-    // Créer un nouvel utilisateur
-    public function store(Request $request)
-    {
-        // Validation des données d'entrée
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
+    // // Créer un nouvel utilisateur
+    // public function store(Request $request)
+    // {
+    //     // Validation des données d'entrée
+    //     $validated = $request->validate([
+    //         'name' => 'required|string|max:255',
+    //         'email' => 'required|email|unique:users,email',
+    //         'password' => 'required|string|min:8|confirmed',
+    //         'role' => 'required|string|exists:roles,name',  
+    //     ]);
 
-        // Créer un utilisateur avec les données validées
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-        ]);
+    //     // Créer un utilisateur avec les données validées
+    //     $user = User::create([
+    //         'name' => $validated['name'],
+    //         'email' => $validated['email'],
+    //         'password' => Hash::make($validated['password']),
+    //     ]);
 
-        // Retourner la réponse avec les détails de l'utilisateur créé
-        return response()->json(['message' => 'Utilisateur créé avec succès', 'user' => $user], 201);
-    }
+    //     // Retourner la réponse avec les détails de l'utilisateur créé
+    //     return response()->json(['message' => 'Utilisateur créé avec succès', 'user' => $user], 201);
+    // }
 
     // Mettre à jour un utilisateur existant
     public function update(Request $request, $id)
@@ -57,6 +58,7 @@ class UserController extends Controller
             'name' => 'sometimes|required|string|max:255',
             'email' => ['sometimes', 'required', 'email', Rule::unique('users')->ignore($id)],
             'password' => 'sometimes|required|string|min:8|confirmed',
+            // 'role' => 'required|string|exists:roles,name',  
         ]);
 
         $user = User::find($id);
