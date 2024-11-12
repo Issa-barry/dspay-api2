@@ -8,104 +8,140 @@ use Spatie\Permission\Models\Permission;
 use App\Models\User;
 
 class RolePermissionController extends Controller
-{
-    // Assigner un rôle à un utilisateur
-    public function assignRole(Request $request)
+{ 
+    /**
+     * Assigner un rôle à un utilisateur.
+     *
+     * @param Request $request
+     * @param int $userId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function assignRole(Request $request, $userId)
     {
         $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'role' => 'required|string|exists:roles,name',
+            'role' => 'required|exists:roles,name',
         ]);
 
-        $user = User::find($request->user_id);
-        // $user->assignRole($request->role);
-        die($user);
-
-        return response()->json(['message' => 'Rôle assigné avec succès.'], 200);
-    }
-
-    // Retirer un rôle à un utilisateur
-    public function removeRole(Request $request)
-    {
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'role' => 'required|string|exists:roles,name',
-        ]);
-
-        $user = User::find($request->user_id);
-        $user->removeRole($request->role);
-
-        return response()->json(['message' => 'Rôle retiré avec succès.'], 200);
-    }
-
-    // Vérifier si un utilisateur a un rôle
-    public function checkUserRole(Request $request)
-    {
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'role' => 'required|string',
-        ]);
-
-        $user = User::find($request->user_id);
+        $user = User::findOrFail($userId);
+        $user->assignRole($request->role);
 
         return response()->json([
-            'hasRole' => $user->hasRole($request->role),
-        ], 200);
+            'message' => "Le rôle {$request->role} a été assigné à l'utilisateur."
+        ]);
     }
 
-    // Donner une permission à un utilisateur
-    public function givePermission(Request $request)
+    /**
+     * Retirer un rôle d'un utilisateur.
+     *
+     * @param Request $request
+     * @param int $userId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function revokeRole(Request $request, $userId)
     {
         $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'permission' => 'required|string|exists:permissions,name',
+            'role' => 'required|exists:roles,name',
         ]);
 
-        $user = User::find($request->user_id);
+        $user = User::findOrFail($userId);
+        $user->removeRole($request->role);
+
+        return response()->json([
+            'message' => "Le rôle {$request->role} a été retiré de l'utilisateur."
+        ]);
+    }
+
+    /**
+     * Assigner une permission à un utilisateur.
+     *
+     * @param Request $request
+     * @param int $userId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function assignPermission(Request $request, $userId)
+    {
+        $request->validate([
+            'permission' => 'required|exists:permissions,name',
+        ]);
+
+        $user = User::findOrFail($userId);
         $user->givePermissionTo($request->permission);
 
-        return response()->json(['message' => 'Permission accordée avec succès.'], 200);
+        return response()->json([
+            'message' => "La permission {$request->permission} a été assignée à l'utilisateur."
+        ]);
     }
 
-    // Retirer une permission à un utilisateur
-    public function revokePermission(Request $request)
+    /**
+     * Retirer une permission d'un utilisateur.
+     *
+     * @param Request $request
+     * @param int $userId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function revokePermission(Request $request, $userId)
     {
         $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'permission' => 'required|string|exists:permissions,name',
+            'permission' => 'required|exists:permissions,name',
         ]);
 
-        $user = User::find($request->user_id);
+        $user = User::findOrFail($userId);
         $user->revokePermissionTo($request->permission);
 
-        return response()->json(['message' => 'Permission retirée avec succès.'], 200);
+        return response()->json([
+            'message' => "La permission {$request->permission} a été retirée de l'utilisateur."
+        ]);
     }
 
-    // Assigner une permission à un rôle
-    public function assignPermissionToRole(Request $request)
+
+     /**
+     * Assigner une ou plusieurs permissions à un rôle.
+     *
+     * @param Request $request
+     * @param int $roleId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function assignPermissionsToRole(Request $request, $roleId)
     {
+        // Valider les permissions envoyées
         $request->validate([
-            'role' => 'required|string|exists:roles,name',
-            'permission' => 'required|string|exists:permissions,name',
+            'permissions' => 'required|array',
+            'permissions.*' => 'exists:permissions,name',  // chaque permission doit exister dans la table permissions
         ]);
 
-        $role = Role::findByName($request->role);
-        $role->givePermissionTo($request->permission);
+        // Trouver le rôle par ID
+        $role = Role::findOrFail($roleId);
 
-        return response()->json(['message' => 'Permission assignée au rôle avec succès.'], 200);
+        // Assigner les permissions au rôle
+        $role->givePermissionTo($request->permissions);
+
+        return response()->json([
+            'message' => "Les permissions ont été assignées au rôle {$role->name}.",
+        ]);
     }
 
-    // Retirer une permission d’un rôle
-    public function removePermissionFromRole(Request $request)
+     /**
+     * Retirer une permission d'un rôle.
+     *
+     * @param Request $request
+     * @param int $roleId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function revokePermissionFromRole(Request $request, $roleId)
     {
+        // Valider les permissions envoyées
         $request->validate([
-            'role' => 'required|string|exists:roles,name',
-            'permission' => 'required|string|exists:permissions,name',
+            'permission' => 'required|exists:permissions,name',
         ]);
 
-        $role = Role::findByName($request->role);
+        // Trouver le rôle par ID
+        $role = Role::findOrFail($roleId);
+
+        // Retirer la permission du rôle
         $role->revokePermissionTo($request->permission);
 
-        return response()->json(['message' => 'Permission retirée du rôle avec succès.'], 200);
+        return response()->json([
+            'message' => "La permission {$request->permission} a été retirée du rôle {$role->name}.",
+        ]);
     }
 }

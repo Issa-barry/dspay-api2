@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+use App\Models\User;
  
 use Exception;
 
@@ -88,5 +90,35 @@ class RoleController extends Controller
         }
     }
     
+
+     // Assigner un rôle à un utilisateur
+    //  public function assignRole( )
+    //  {
+    //     //  $request->validate([
+    //     //      'user_id' => 'required|exists:users,id',
+    //     //      'role' => 'required|string|exists:roles,name',
+    //     //  ]);
  
+    //     //  $user = User::find($request->user_id);
+    //     //  $user->assignRole($request->role);
+  
+    //     //  return response()->json(['message' => 'Rôle assigné avec succès.'], 200);
+    //  }
+ 
+ 
+       
+    public function assignRole(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+             'role' => 'required|string|exists:roles,name',
+        ]);
+
+         $user = User::find($request->user_id);
+        die($user->assignRole($request->role));
+        // return response()->json([
+        //     'message' => 'Rôle créé avec succès.',
+        //     'role' => $role,
+        // ], 201);
+    }
 }
