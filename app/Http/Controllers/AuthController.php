@@ -20,7 +20,11 @@ class AuthController extends Controller
     {
         // Validation des données
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
+            'civilite' => 'required|in:Mr,Mme,Mlle,Autre',  // Validation de la civilité
+            'nom' => 'required|string|max:255',              // Validation du nom
+            'prenom' => 'required|string|max:255',           // Validation du prénom
+            'phone' => 'required|string|unique:users,phone', // Téléphone unique
+            'date_naissance' => 'nullable|date',             // Date de naissance (facultatif)
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
             'role' => 'required|string|exists:roles,name',  
@@ -34,8 +38,12 @@ class AuthController extends Controller
         try {
             // Création de l'utilisateur
             $user = User::create([
-                'name' => $request->name,
+                'civilite' => $request->civilite,
+                'nom' => $request->nom,
+                'prenom' => $request->prenom,
                 'email' => $request->email,
+                'phone' => $request->phone,
+                'date_naissance' => $request->date_naissance,
                 'password' => Hash::make($request->password),
             ]);
 

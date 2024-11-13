@@ -15,7 +15,7 @@
         if (!Auth::user()->can('create-devise')) {
             return response()->json(['message' => 'Vous n\'avez pas la permission de créer une devise.'], 403);
         }
-     }
+     } 
  
 
     public function store(Request $request)

@@ -9,6 +9,9 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\Api\DeviseController;
 
+Route::apiResource('users', UserController::class);
+Route::get('contact', [UserController::class, 'createContact']);
+
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/resend-verification-email', [AuthController::class, 'resendVerificationEmail'])->middleware('auth:sanctum');
@@ -57,3 +60,10 @@ Route::post('roles/{roleId}/revoke-permission', [RolePermissionController::class
     Route::put('devises/{id}', [DeviseController::class, 'update']);     
     Route::delete('devises/{id}', [DeviseController::class, 'destroy']);  
 // });
+
+
+use App\Http\Controllers\AgenceController;
+Route::apiResource('agences', AgenceController::class);
+ 
+use App\Http\Controllers\TauxController;
+Route::apiResource('taux', TauxController::class);
