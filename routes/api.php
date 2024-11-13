@@ -9,6 +9,9 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\Api\DeviseController;
 
+Route::apiResource('users', UserController::class);
+Route::get('contact', [UserController::class, 'createContact']);
+
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/resend-verification-email', [AuthController::class, 'resendVerificationEmail'])->middleware('auth:sanctum');
@@ -50,16 +53,17 @@ Route::post('roles/{roleId}/assign-permissions', [RolePermissionController::clas
 Route::post('roles/{roleId}/revoke-permission', [RolePermissionController::class, 'revokePermissionFromRole']);// Retirer une permission d'un rôle
 
 
-Route::middleware('auth:sanctum')->group(function () {
+// Route::middleware('auth:sanctum')->group(function () {
     Route::get('devises', [DeviseController::class, 'index']);            
     Route::post('devises', [DeviseController::class, 'store']);           
     Route::get('devises/{id}', [DeviseController::class, 'show']);       
     Route::put('devises/{id}', [DeviseController::class, 'update']);     
     Route::delete('devises/{id}', [DeviseController::class, 'destroy']);  
-});
+// });
 
 
-use App\Http\Controllers\Api\AgenceController;
-// Route::apiResource('/agences', AgenceController::class);
-Route::get('agences', [AgenceController::class, 'store']);   
-Route::get('agences/{id}', [AgenceController::class, 'show']);  
+use App\Http\Controllers\AgenceController;
+Route::apiResource('agences', AgenceController::class);
+ 
+use App\Http\Controllers\TauxController;
+Route::apiResource('taux', TauxController::class);

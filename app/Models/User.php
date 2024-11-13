@@ -24,6 +24,13 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
+        'reference',
+        'civilite',
+        'nom',
+        'prenom',
+        'phone',
+        'date_naissance',
+         
     ];
 
     /**
@@ -48,4 +55,21 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
         ];
     }
+
+    protected static function booted()
+    {
+        static::creating(function ($user) {
+            $user->reference = self::generateUniqueReference();
+        });
+    }
+
+    public static function generateUniqueReference()
+    {
+        do {
+            $reference = strtoupper(substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 2)) . rand(10, 99) . rand(0, 9);
+        } while (self::where('reference', $reference)->exists());
+
+        return $reference;
+    }
+
 }

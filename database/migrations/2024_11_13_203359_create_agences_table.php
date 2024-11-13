@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('agences', function (Blueprint $table) {
             $table->id();
-            $table->string('reference')->unique(); // Référence unique
-            $table->string('nom');
-            $table->string('phone');
+            $table->string('reference', 6)->unique();
+            $table->string('nom_agence');
+            $table->string('phone')->unique();
             $table->string('email')->unique();
-            $table->foreignId('adresse_id')->constrained('adresses')->onDelete('cascade');
-            $table->date('date_creation'); // Date de création
+            $table->enum('statut', ['active', 'attente', 'bloque', 'archive'])->default('attente');
+            $table->timestamp('date_creation')->default(now());
             $table->timestamps();
         });
     }

@@ -11,16 +11,27 @@ class Agence extends Model
 
     protected $fillable = [
         'reference',
-        'nom',
+        'nom_agence',
         'phone',
         'email',
-        'adresse_id',
-        'date_creation'
+        'statut',
+        'date_creation',
     ];
 
-    // Relation avec l'adresse
-    public function adresse()
+    protected static function booted()
     {
-        return $this->belongsTo(Adresse::class);
+        static::creating(function ($user) {
+            $user->reference = self::generateUniqueReference();
+        });
     }
+
+    public static function generateUniqueReference()
+    {
+        do {
+            $reference = strtoupper(substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 2)) . rand(10, 99) . rand(0, 9);
+        } while (self::where('reference', $reference)->exists());
+
+        return $reference;
+    }
+
 }
