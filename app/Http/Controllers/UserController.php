@@ -1,153 +1,159 @@
 <?php
+
 namespace App\Http\Controllers;
 
+use App\Models\Adresse;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Support\Facades\Password;
-use Illuminate\Auth\Events\Verified;
-use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {
-    // Afficher tous les utilisateurs
+    // Liste des utilisateurs avec leur adresse
     public function index()
     {
-        $users = User::all();  
-        return response()->json($users);  
+        $users = User::with('adresse')->get();
+        return response()->json([
+            'success' => true,
+            'message' => 'Liste des utilisateurs récupérée avec succès.',
+            'data' => $users
+        ]);
     }
 
-
-    public function show($id) 
+    // Afficher un utilisateur par ID
+    public function show($id)
     {
-        $user = User::find($id); 
+        $user = User::with('adresse')->find($id);
 
         if (!$user) {
-            return response()->json(['message' => 'Utilisateur non trouvé'], 404);
+            return response()->json([
+                'success' => false,
+                'message' => 'Utilisateur non trouvé.'
+            ], 404);
         }
 
-        return response()->json($user); 
+        return response()->json([
+            'success' => true,
+            'message' => 'Détails de l\'utilisateur récupérés avec succès.',
+            'data' => $user
+        ]);
     }
 
-    public function createContact(Request $request)
-    {
-        // $validated = $request->validate([
-        //     'civilite' => 'required|in:Mr,Mme,Mlle,Autre',  
-        //     'nom' => 'required|string|max:255',           
-        //     'prenom' => 'required|string|max:255',           
-        //     'email' => 'required|email|unique:users,email',  
-        //     'phone' => 'required|string|unique:users,phone', 
-        //     'date_naissance' => 'nullable|date',             
-        //     'password' => 'required|string|min:8|confirmed', 
-        // ]); 
-
-        // $user = User::create([
-        //     'civilite' => $validated['civilite'],       
-        //     'nom' => $validated['nom'],                  
-        //     'prenom' => $validated['prenom'],           
-        //     'email' => $validated['email'],             
-        //     'phone' => $validated['phone'],             
-        //     'date_naissance' => $validated['date_naissance'], 
-        //     'password' => Hash::make($validated['password']), 
-        // ]);
-
-        // return response()->json(['message' => 'Utilisateur créé avec succès', 'user' => $user], 201);
-    }
- 
-
+    // Créer un nouvel utilisateur
     public function store(Request $request)
     {
-        // Validation des données
-        $validator = Validator::make($request->all(), [
-            'civilite' => 'required|in:Mr,Mme,Mlle,Autre',  
-            'nom' => 'required|string|max:255',             
-            'prenom' => 'required|string|max:255',        
-            'phone' => 'required|string|unique:users,phone', 
-            'date_naissance' => 'nullable|date',             
+        $validated = $request->validate([
+            'civilite' => 'required|in:Mr,Mme,Mlle,Autre',
+            'nom' => 'required|string|max:255',
+            'prenom' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
+            'phone' => 'required|string|unique:users,phone',
+            'date_naissance' => 'nullable|date',
             'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|string|exists:roles,name',  
+            'role' => 'required|string|exists:roles,name',
+            'adresse' => 'required|array',
+            'adresse.pays' => 'required|string|max:255',
+            'adresse.adresse' => 'required|string|max:255',
+            'adresse.complement_adresse' => 'nullable|string|max:255',
+            'adresse.ville' => 'required|string|max:255',
+            'adresse.code_postal' => 'required|string|max:20',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
+        // Créer l'adresse
+        $adresse = Adresse::create($validated['adresse']);
 
         try {
             $user = User::create([
-                'civilite' => $request->civilite,
-                'nom' => $request->nom,
-                'prenom' => $request->prenom,
-                'email' => $request->email,
-                'phone' => $request->phone,
-                'date_naissance' => $request->date_naissance,
-                'password' => Hash::make($request->password),
+                'civilite' => $validated['civilite'],
+                'nom' => $validated['nom'],
+                'prenom' => $validated['prenom'],
+                'email' => $validated['email'],
+                'phone' => $validated['phone'],
+                'date_naissance' => $validated['date_naissance'],
+                'password' => Hash::make($validated['password']),
+                'adresse_id' => $adresse->id
             ]);
 
-            $user->assignRole($request->role); // Assurez-vous que ce rôle existe
-
-            // event(new Registered($user));
+            $user->assignRole($validated['role']);
             $user->sendEmailVerificationNotification();
 
-            $token = $user->createToken('Personal Access Token')->plainTextToken;
-
             return response()->json([
-                'message' => 'Utilisateur créé avec succès. Veuillez vérifier votre email pour valider votre compte.',
-                'user' => $user,
-                'token' => $token,
+                'success' => true,
+                'message' => 'Utilisateur créé avec succès. Veuillez vérifier votre email.',
+                'data' => $user->load('adresse')
             ], 201);
 
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Une erreur est survenue lors de l\'enregistrement.',
-                'message' => $e->getMessage(),
+                'success' => false,
+                'message' => 'Une erreur est survenue lors de la création de l\'utilisateur.',
+                'error' => $e->getMessage()
             ], 500);
         }
-        return "hello";
     }
 
-
- 
+    // Mettre à jour un utilisateur
     public function update(Request $request, $id)
     {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Utilisateur non trouvé.'
+            ], 404);
+        }
 
         $validated = $request->validate([
-            'civilite' => 'nullable|in:Mr,Mme,Mlle,Autre', 
-            'nom' => 'sometimes|required|string|max:255',    
+            'civilite' => 'nullable|in:Mr,Mme,Mlle,Autre',
+            'nom' => 'sometimes|required|string|max:255',
             'prenom' => 'sometimes|required|string|max:255',
-            'email' => ['sometimes', 'required', 'email', Rule::unique('users')->ignore($id)], 
-            'phone' => ['sometimes', 'required', 'string', Rule::unique('users')->ignore($id)], 
-            'date_naissance' => 'nullable|date',           
-            'password' => 'nullable|string|min:8|confirmed', 
+            'email' => 'sometimes|required|email|unique:users,email,' . $id,
+            'phone' => 'sometimes|required|string|unique:users,phone,' . $id,
+            'date_naissance' => 'nullable|date',
+            'password' => 'nullable|string|min:8|confirmed',
+            'adresse' => 'sometimes|array',
+            'adresse.pays' => 'string|max:255',
+            'adresse.adresse' => 'string|max:255',
+            'adresse.complement_adresse' => 'nullable|string|max:255',
+            'adresse.ville' => 'string|max:255',
+            'adresse.code_postal' => 'string|max:20',
         ]);
 
-        $user = User::find($id);  
-
-        if (!$user) {
-            return response()->json(['message' => 'Utilisateur non trouvé'], 404);  
+        if (isset($validated['adresse'])) {
+            $user->adresse->update($validated['adresse']);
         }
-      
-        $user->update($validated);
 
-        return response()->json(['message' => 'Utilisateur mis à jour avec succès', 'user' => $user]);
+        $user->update(collect($validated)->except('adresse')->toArray());
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Utilisateur mis à jour avec succès.',
+            'data' => $user->load('adresse')
+        ]);
     }
 
-
+    // Supprimer un utilisateur
     public function destroy($id)
     {
-        $user = User::find($id); 
+        $user = User::find($id);
 
         if (!$user) {
-            return response()->json(['message' => 'Utilisateur non trouvé'], 404); 
+            return response()->json([
+                'success' => false,
+                'message' => 'Utilisateur non trouvé.'
+            ], 404);
         }
 
         $user->delete();
 
-        return response()->json(['message' => 'Utilisateur supprimé avec succès']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Utilisateur supprimé avec succès.'
+        ]);
     }
 }

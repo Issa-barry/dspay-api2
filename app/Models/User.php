@@ -30,8 +30,13 @@ class User extends Authenticatable implements MustVerifyEmail
         'prenom',
         'phone',
         'date_naissance',
-         
+        'adresse_id',
     ];
+
+    public function adresse()
+    {
+        return $this->belongsTo(Adresse::class);
+    }
 
     /**
      * The attributes that should be hidden for serialization.

@@ -13,14 +13,16 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            $table->string('email')->unique();
             $table->string('reference', 5)->unique();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->date('date_naissance')->default('9999-12-31');
             $table->enum('civilite', ['Mr', 'Mme', 'Mlle', 'Autre'])->default('Autre');
+            $table->foreignId('adresse_id')->constrained('adresses')->onDelete('cascade');
+            $table->enum('statut', ['active', 'attente', 'bloque', 'archive'])->default('attente');
             $table->string('nom');
             $table->string('prenom');
             $table->string('phone');
-            $table->date('date_naissance')->default('9999-12-31');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();

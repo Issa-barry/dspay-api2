@@ -17,7 +17,6 @@ class Adresse extends Model
         'code_postal'
     ];
 
-    // Une adresse peut être liée à plusieurs agences
     public function agences()
     {
         return $this->hasMany(Agence::class);

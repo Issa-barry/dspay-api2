@@ -19,11 +19,12 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->enum('statut', ['active', 'attente', 'bloque', 'archive'])->default('attente');
             $table->timestamp('date_creation')->default(now());
+            $table->foreignId('adresse_id')->constrained('adresses')->onDelete('cascade');
             $table->timestamps();
         });
     }
 
-    /**
+    /** 
      * Reverse the migrations.
      */
     public function down(): void
