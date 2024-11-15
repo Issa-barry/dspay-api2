@@ -10,12 +10,14 @@
  {
      public function index()
      {
-        //  return response()->json(Devise::all(), 200);
-
-        if (!Auth::user()->can('create-devise')) {
-            return response()->json(['message' => 'Vous n\'avez pas la permission de créer une devise.'], 403);
-        }
-     } 
+        $devise =  Devise::all();
+        return response()->json([
+            'success' => true,
+            'message' => 'Liste des Devises récupérée avec succès.',
+            'data' => $devise
+        ]);
+ 
+     }
  
 
     public function store(Request $request)

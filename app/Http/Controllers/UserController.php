@@ -20,7 +20,10 @@ class UserController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Liste des utilisateurs récupérée avec succès.',
-            'data' => $users
+            'data' => $users->map(function ($user) {
+            return array_merge($user->toArray(), ['role' => $user->role]);
+            })
+            // 'data' => $users
         ]);
     }
 
@@ -39,14 +42,14 @@ class UserController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Détails de l\'utilisateur récupérés avec succès.',
-            'data' => $user
+            'data' => array_merge($user->toArray(), ['role' => $user->role])
         ]);
     }
 
     // Créer un nouvel utilisateur
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $validated = $request->validate([ 
             'civilite' => 'required|in:Mr,Mme,Mlle,Autre',
             'nom' => 'required|string|max:255',
             'prenom' => 'required|string|max:255',
@@ -84,7 +87,8 @@ class UserController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Utilisateur créé avec succès. Veuillez vérifier votre email.',
-                'data' => $user->load('adresse')
+                'data' => array_merge($user->load('adresse')->toArray(), ['role' => $user->role])
+                // 'data' => $user->load('adresse')
             ], 201);
 
         } catch (\Exception $e) {
@@ -133,7 +137,7 @@ class UserController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Utilisateur mis à jour avec succès.',
-            'data' => $user->load('adresse')
+            'data' => array_merge($user->load('adresse')->toArray(), ['role' => $user->role])
         ]);
     }
 

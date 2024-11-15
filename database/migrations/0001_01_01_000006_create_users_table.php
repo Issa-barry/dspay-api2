@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('nom');
             $table->string('prenom');
             $table->string('phone');
-            $table->string('password');
+            $table->string('password'); 
             $table->rememberToken();
             $table->timestamps();
         });
