@@ -36,7 +36,7 @@ class TransfertController extends Controller
         'devise_source_id' => 'required|exists:devises,id',
         'devise_cible_id' => 'required|exists:devises,id',
         'montant' => 'required|numeric|min:0',
-        'quartier' => 'required|string',
+        'quartier' => 'string',
         'receveur_nom' => 'required|string',
         'receveur_prenom' => 'required|string',
         'receveur_phone' => 'required|string',
@@ -143,57 +143,58 @@ class TransfertController extends Controller
         }
     }
 
-    /**
-     * Mettre à jour un transfert existant.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        try {
-            $transfert = Transfert::find($id);
+   /**
+ * Mettre à jour un transfert existant.
+ *
+ * @param  \Illuminate\Http\Request  $request
+ * @param  int  $id
+ * @return \Illuminate\Http\Response
+ */
+public function update(Request $request, $id)
+{
+    try {
+        $transfert = Transfert::find($id);
 
-            if (!$transfert) {
-                return $this->responseJson(false, 'Transfert non trouvé.', null, 404);
-            }
-
-            // Validation des données d'entrée
-            $validated = Validator::make($request->all(), [
-                'devise_source_id' => 'required|exists:devises,id',
-                'devise_cible_id' => 'required|exists:devises,id',
-                'montant' => 'required|numeric|min:0',
-            ]);
-
-            if ($validated->fails()) {
-                return $this->responseJson(false, 'Validation échouée.', $validated->errors(), 422);
-            }
-
-            // Récupérer les devises et le taux de change
-            $deviseSource = Devise::find($request->devise_source_id);
-            $deviseCible = Devise::find($request->devise_cible_id);
-            
-            $tauxEchange = TauxEchange::where('devise_source_id', $request->devise_source_id)
-                ->where('devise_cible_id', $request->devise_cible_id)
-                ->first();
-
-            // Calculer le montant converti
-            $montantConverti = $request->montant * $tauxEchange->taux;
-
-            // Mise à jour du transfert
-            $transfert->update([
-                'devise_source_id' => $request->devise_source_id,
-                'devise_cible_id' => $request->devise_cible_id,
-                'montant' => $request->montant,
-                'montant_converti' => $montantConverti,
-            ]);
-
-            return $this->responseJson(true, 'Transfert mis à jour avec succès.', $transfert);
-        } catch (Exception $e) {
-            return $this->responseJson(false, 'Erreur lors de la mise à jour du transfert.', $e->getMessage(), 500);
+        if (!$transfert) {
+            return $this->responseJson(false, 'Transfert non trouvé.', null, 404);
         }
+
+        // Validation des données d'entrée (uniquement les informations modifiables)
+        $validated = Validator::make($request->all(), [
+            'quartier' => 'string|nullable', // Le quartier peut être modifié
+            'receveur_nom' => 'string|nullable',
+            'receveur_prenom' => 'string|nullable',
+            'receveur_phone' => 'string|nullable',
+        ]);
+
+        if ($validated->fails()) {
+            return $this->responseJson(false, 'Validation échouée.', $validated->errors(), 422);
+        }
+
+        // On ne modifie pas le montant, la devise et le taux de change
+        // On met simplement à jour les informations modifiables
+        $transfert->update([
+            'quartier' => $request->quartier ?? $transfert->quartier,
+            'receveur_nom' => $request->receveur_nom ?? $transfert->receveur_nom,
+            'receveur_prenom' => $request->receveur_prenom ?? $transfert->receveur_prenom,
+            'receveur_phone' => $request->receveur_phone ?? $transfert->receveur_phone,
+        ]);
+
+        // Charger les relations
+        $transfert->load([
+            'deviseSource', 
+            'deviseCible', 
+            'tauxEchange' // Charger le taux de change
+        ]);
+
+        // Retourner une réponse de succès
+        return $this->responseJson(true, 'Transfert mis à jour avec succès.', $transfert);
+
+    } catch (Exception $e) {
+        return $this->responseJson(false, 'Erreur lors de la mise à jour du transfert.', $e->getMessage(), 500);
     }
+}
+
 
     /**
      * Supprimer un transfert existant.

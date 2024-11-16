@@ -36,7 +36,7 @@ return new class extends Migration
             $table->string('receveur_phone');
             
             // Informations supplémentaires
-            $table->string('quartier');
+            $table->string('quartier')->nullable();
             $table->string('code', 6)->unique();  // Code unique pour chaque transfert
             
             $table->timestamps();
