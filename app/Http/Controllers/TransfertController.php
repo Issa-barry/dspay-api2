@@ -7,6 +7,8 @@ use App\Models\Devise;
 use App\Models\TauxEchange;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Mail\TransfertNotification;
+use Illuminate\Support\Facades\Mail;
 use Exception;
 
 class TransfertController extends Controller
@@ -99,6 +101,9 @@ class TransfertController extends Controller
             'deviseCible', 
             'tauxEchange' // Charger le taux de change
         ]);
+
+         // Envoyer un email à l'expéditeur
+         Mail::to($transfert->expediteur_email)->send(new TransfertNotification($transfert));
 
         return $this->responseJson(true, 'Transfert effectué avec succès.', $transfert, 201);
     } catch (Exception $e) {
