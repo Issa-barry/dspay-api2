@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Support\Facades\URL;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -30,5 +31,11 @@ class AuthServiceProvider extends ServiceProvider
         ResetPassword::createUrlUsing(function ($user, string $token) {
             return url("/api/reset-password/{$token}?email={$user->email}");
         });
+
+         // Définir l'expiration des routes signées à 1 minute.
+         URL::defaults([
+            'expire' => now()->addMinutes(1), 
+        ]);
     }
+ 
 }

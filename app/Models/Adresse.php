@@ -14,10 +14,11 @@ class Adresse extends Model
         'adresse',
         'complement_adresse',
         'ville',
-        'code_postal'
+        'code_postal',
+        'quartier',    
+        'region', 
     ];
 
-    // Une adresse peut être liée à plusieurs agences
     public function agences()
     {
         return $this->hasMany(Agence::class);

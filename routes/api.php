@@ -52,18 +52,31 @@ Route::post('users/{userId}/revoke-permission', [RolePermissionController::class
 Route::post('roles/{roleId}/assign-permissions', [RolePermissionController::class, 'assignPermissionsToRole']);// Assigner une ou plusieurs permissions à un rôle
 Route::post('roles/{roleId}/revoke-permission', [RolePermissionController::class, 'revokePermissionFromRole']);// Retirer une permission d'un rôle
 
+    // Route::get('devises', [DeviseController::class, 'index']);            
+    // Route::post('devises', [DeviseController::class, 'store']);           
+    // Route::get('devises/{id}', [DeviseController::class, 'show']);       
+    // Route::put('devises/{id}', [DeviseController::class, 'update']);     
+    // Route::delete('devises/{id}', [DeviseController::class, 'destroy']);  
+    Route::apiResource('devises', DeviseController::class);
 
-// Route::middleware('auth:sanctum')->group(function () {
-    Route::get('devises', [DeviseController::class, 'index']);            
-    Route::post('devises', [DeviseController::class, 'store']);           
-    Route::get('devises/{id}', [DeviseController::class, 'show']);       
-    Route::put('devises/{id}', [DeviseController::class, 'update']);     
-    Route::delete('devises/{id}', [DeviseController::class, 'destroy']);  
-// });
 
 
 use App\Http\Controllers\AgenceController;
 Route::apiResource('agences', AgenceController::class);
  
-use App\Http\Controllers\TauxController;
-Route::apiResource('taux', TauxController::class);
+use App\Http\Controllers\AgentController;
+Route::apiResource('agents', AgentController::class);
+
+use App\Http\Controllers\TauxEchangeController;
+Route::get('taux-echanges', [TauxEchangeController::class, 'index']);
+Route::post('taux-echanges', [TauxEchangeController::class, 'store']);
+Route::put('taux-echanges/{tauxEchange}', [TauxEchangeController::class, 'update']);
+Route::delete('taux-echanges/{tauxEchange}', [TauxEchangeController::class, 'destroy']);
+
+use App\Http\Controllers\ConversionController;
+Route::get('conversions', [ConversionController::class, 'index']);
+Route::post('conversions', [ConversionController::class, 'store']);
+Route::get('conversions/{conversion}', [ConversionController::class, 'show']);
+Route::put('conversions/{conversion}', [ConversionController::class, 'update']);
+Route::delete('conversions/{conversion}', [ConversionController::class, 'destroy']);
+

@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+use URL;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -30,9 +31,20 @@ class User extends Authenticatable implements MustVerifyEmail
         'prenom',
         'phone',
         'date_naissance',
-         
+        'adresse_id',
     ];
 
+    public function adresse()
+    {
+        return $this->belongsTo(Adresse::class);
+    }
+
+    // Relation to include role data
+    public function getRoleAttribute()
+    {
+        return $this->roles->pluck('name')->first(); // Return the first role name as string
+    }
+   
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -55,11 +67,18 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
         ];
     }
-
+   //Genereation de referecen
     protected static function booted()
     {
         static::creating(function ($user) {
             $user->reference = self::generateUniqueReference();
+        });
+
+        static::deleting(function ($user) {
+            // Supprime l'adresse associée si elle existe
+            if ($user->adresse) {
+                $user->adresse->delete();
+            }
         });
     }
 
@@ -72,4 +91,17 @@ class User extends Authenticatable implements MustVerifyEmail
         return $reference;
     }
 
+     /**
+     * Get the email verification URL for the given user.
+     *
+     * @return string
+     */
+    public function verificationUrl($notifiable)
+    {
+        return URL::temporarySignedRoute(
+            'verification.verify',
+            now()->addMinutes(1), // Lien expire après 1 minute
+            ['id' => $notifiable->getKey(), 'hash' => sha1($notifiable->getEmailForVerification())]
+        );
+    }
 }

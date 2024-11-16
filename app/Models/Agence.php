@@ -16,7 +16,13 @@ class Agence extends Model
         'email',
         'statut',
         'date_creation',
+        'adresse_id',
     ];
+
+    public function adresse()
+    {
+        return $this->belongsTo(Adresse::class);
+    }
 
     protected static function booted()
     {
