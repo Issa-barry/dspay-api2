@@ -83,3 +83,10 @@ Route::delete('conversions/{conversion}', [ConversionController::class, 'destroy
 use App\Http\Controllers\TransfertController;
 Route::apiResource('/transferts', TransfertController::class);
 Route::post('/transferts/valider-retrait', [TransfertController::class, 'validerRetrait']);
+
+// routes/api.php
+
+use App\Http\Controllers\FactureController;
+Route::get('factures', [FactureController::class, 'index']); // Afficher toutes les factures
+Route::get('factures/{id}', [FactureController::class, 'show']); // Afficher une facture
+Route::post('factures/{id}/payer', [FactureController::class, 'payerFacture']); // Payer une facture

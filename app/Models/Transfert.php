@@ -27,27 +27,28 @@ class Transfert extends Model
         'quartier',
         'code',
         'statut', 
-    ];
+    ]; 
 
-    // Relation avec le modèle Devise (devise source)
+     public function facture()
+     {
+         return $this->hasOne(Facture::class);
+     }
+
     public function deviseSource()
     {
         return $this->belongsTo(Devise::class, 'devise_source_id');
     }
-
-    // Relation avec le modèle Devise (devise cible)
+ 
     public function deviseCible()
     {
         return $this->belongsTo(Devise::class, 'devise_cible_id');
     }
-
-    // Relation avec le modèle TauxEchange
+ 
     public function tauxEchange()
     {
         return $this->belongsTo(TauxEchange::class, 'taux_echange_id');
     }
-
-    // Calcul du montant converti basé sur le taux d'échange
+ 
     public function calculerMontantConverti()
     {
         if ($this->tauxEchange) {

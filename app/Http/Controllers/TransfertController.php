@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Mail\TransfertNotification;
 use App\Mail\TransfertRetireNotification;
+use App\Models\Facture;
 use Illuminate\Support\Facades\Mail;
 use Exception;
 
@@ -98,11 +99,26 @@ class TransfertController extends Controller
                 'code' => (string) \Str::uuid(), // Générer un UUID comme code
             ]);
 
+            // Créer la facture associée au transfert
+            $facture = Facture::create([
+                'transfert_id' => $transfert->id,
+                'type' => 'transfert',
+                'statut' => 'brouillon',
+                'envoye' => false,
+                'nom_societe' => 'FELLO', // Exemple de données fixes, à adapter
+                'adresse_societe' => '5 allé du Foehn Ostwald 67540, Strasbourg.',
+                'phone_societe' => 'Numéro de téléphone de la société',
+                'email_societe' => 'contact@societe.com',
+                'total' => $request->montant,
+                'montant_du' => $request->montant
+            ]);
+
             // Charger les relations
             $transfert->load([
                 'deviseSource',
                 'deviseCible',
-                'tauxEchange' // Charger le taux de change
+                'tauxEchange',
+                'facture'
             ]);
 
             // Envoyer un email à l'expéditeur
