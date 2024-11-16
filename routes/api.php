@@ -82,3 +82,4 @@ Route::delete('conversions/{conversion}', [ConversionController::class, 'destroy
 
 use App\Http\Controllers\TransfertController;
 Route::apiResource('/transferts', TransfertController::class);
+Route::post('/transferts/valider-retrait', [TransfertController::class, 'validerRetrait']);

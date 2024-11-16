@@ -26,6 +26,7 @@ class Transfert extends Model
         'expediteur_email',
         'quartier',
         'code',
+        'statut', 
     ];
 
     // Relation avec le modèle Devise (devise source)
@@ -55,12 +56,10 @@ class Transfert extends Model
 
         return 0; // Si aucun taux n'est trouvé, retourner 0
     }
-
-     // Méthode pour générer un code unique pour chaque transfert
+ 
      public static function generateUniqueCode()
      {
-         do {
-             // Génère un code unique avec 6 caractères alphanumériques
+         do { 
              $code = strtoupper(substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 2)) . rand(1000, 9999);
          } while (self::where('code', $code)->exists());  // Vérifie que le code n'existe pas déjà
  
@@ -71,7 +70,6 @@ class Transfert extends Model
     protected static function booted()
     {
         static::creating(function ($transfert) {
-            // Génère un code unique pour chaque transfert
             $transfert->code = self::generateUniqueCode();
         });
     }

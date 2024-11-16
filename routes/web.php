@@ -19,3 +19,9 @@ Route::get('/preview-email', function () {
 
     return view('emails.transfertNotification', ['transfert' => $transfert]);
 });
+
+Route::get('/preview-email-retrait', function () {
+    $transfert = \App\Models\Transfert::with(['deviseSource', 'deviseCible'])->first(); // Exemple avec données réelles
+
+    return view('emails.transfertRetire', ['transfert' => $transfert]);
+});

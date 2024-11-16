@@ -37,8 +37,9 @@ return new class extends Migration
             
             // Informations supplémentaires
             $table->string('quartier')->nullable();
-            $table->string('code', 6)->unique();  // Code unique pour chaque transfert
-            
+            $table->string('code', 255)->unique();  // Code unique pour chaque transfert
+            $table->string('statut')->default('en_cours'); // Défaut: en_cours
+
             $table->timestamps();
         });
     }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Détails de votre transfert</title>
+    <title>Retrait du transfert effectué</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -15,8 +15,8 @@
         h1 {
             color: #007bff;
         }
-        .logo_name{
-            color: #007bff; 
+        .logo_name {
+            color: #007bff;
             font-weight: 900;
         }
         table {
@@ -45,38 +45,38 @@
     </style>
 </head>
 <body>
-    <h1>Détails du transfert</h1>
-    <p>Bonjour {{ $transfert->expediteur_prenom }} {{ $transfert->expediteur_nom }},</p>
+    <h1>Retrait !</h1>
 
-    <p>Voici les détails de votre transfert:</p>
+    <p>Bonjour {{ $transfert->expediteur_nom }} {{ $transfert->expediteur_prenom }},</p>
 
+    <p>Nous vous informons que,{{ $transfert->receveur_prenom }} {{ $transfert->receveur_nom }} , a effectué le retrait de votre transfert.</p>
+
+    <p><strong>Détails du transfert :</strong></p>
+    
     <table>
         <tr>
-            <th>Montant en Euro :</th>
+            <th>Montant envoyé :</th>
             <td>{{ $transfert->montant }} {{ $transfert->deviseSource->tag }}</td>
         </tr>
         <tr>
-            <th>Bénéficiaire :</th>
-            <td>{{ $transfert->receveur_prenom }} {{ $transfert->receveur_nom }}<br>{{ $transfert->receveur_phone }}</td>
-        </tr>
-        <tr>
-            <th>Montant à récupérer :</th>
+            <th>Montant retiré :</th>
             <td>{{ $transfert->montant_converti }} {{ $transfert->deviseCible->tag }}</td>
         </tr>
         <tr>
-            <th>Agence :</th>
+            <th>Quartier de retrait :</th>
             <td>{{ $transfert->quartier }}</td>
         </tr>
         <tr>
-            <th>Code :</th>
+            <th>Code du transfert :</th>
             <td>{{ $transfert->code }}</td>
-            {{--  <td>{{ $codeDechiffre }}</td>  --}}
         </tr>
     </table>
 
-    <p>Merci d'utiliser notre service de transfert.</p>
+    <p>Nous vous remercions d'avoir utilisé notre service de transfert.</p>
+
     <p>Cordialement,</p>
     <p>L'équipe de Transfert <span class="logo_name">FELLO</span></p>
+
     <p class="footer">
         Pour toute question, contactez notre support client :<br>
         Téléphone : +33 7 58 85 50 39<br>
