@@ -47,9 +47,9 @@
 <body>
     <h1>Retrait !</h1>
 
-    <p>Bonjour {{ $transfert->expediteur_nom }} {{ $transfert->expediteur_prenom }},</p>
+    <p>Bonjour {{ $transfert->expediteur_prenom }} {{ $transfert->expediteur_nom }} ,</p>
 
-    <p>Nous vous informons que,{{ $transfert->receveur_prenom }} {{ $transfert->receveur_nom }} , a effectué le retrait de votre transfert.</p>
+    <p>{{ $transfert->receveur_prenom }} {{ $transfert->receveur_nom }} , a effectué le retrait de votre transfert.</p>
 
     <p><strong>Détails du transfert :</strong></p>
     
