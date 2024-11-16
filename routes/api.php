@@ -80,3 +80,5 @@ Route::get('conversions/{conversion}', [ConversionController::class, 'show']);
 Route::put('conversions/{conversion}', [ConversionController::class, 'update']);
 Route::delete('conversions/{conversion}', [ConversionController::class, 'destroy']);
 
+use App\Http\Controllers\TransfertController;
+Route::apiResource('/transferts', TransfertController::class);

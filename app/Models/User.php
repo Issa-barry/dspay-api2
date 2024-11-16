@@ -91,7 +91,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return $reference;
     }
 
-     /**
+     /** 
      * Get the email verification URL for the given user.
      *
      * @return string
