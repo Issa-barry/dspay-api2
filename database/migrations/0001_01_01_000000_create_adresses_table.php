@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('complement_adresse')->nullable();
             $table->string('code_postal');
             $table->string('ville');
+            $table->string('quartier')->nullable();
+            $table->string('region')->nullable();
             $table->timestamps();
         }
         });

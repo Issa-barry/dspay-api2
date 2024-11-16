@@ -14,7 +14,9 @@ class Adresse extends Model
         'adresse',
         'complement_adresse',
         'ville',
-        'code_postal'
+        'code_postal',
+        'quartier',    
+        'region', 
     ];
 
     public function agences()
