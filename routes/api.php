@@ -8,6 +8,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\Api\DeviseController;
+use App\Http\Controllers\ModelHasPermissionController;
 
 Route::apiResource('users', UserController::class);
 Route::get('contact', [UserController::class, 'createContact']);
@@ -25,39 +26,36 @@ Route::middleware('auth:sanctum')->group(function () {
 // Route::post('resend-verification-email', [AuthController::class, 'resendVerificationEmail']);
 
 
-// Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/roles', [RoleController::class, 'index']);
-    Route::post('/roles', [RoleController::class, 'create']);
-    Route::get('/roles/{id}', [RoleController::class, 'show']);
-    Route::put('/roles/{id}', [RoleController::class, 'update']);
-    Route::delete('/roles/{id}', [RoleController::class, 'destroy']);
+Route::apiResource('/devises', DeviseController::class);
+
+// Route::middleware('auth:sanctum')->group(function () { 
+    Route::apiResource('roles', RoleController::class);
+
+    Route::apiResource('/permissions', PermissionController::class);
+    
     Route::post('/assign-role', [RoleController::class, 'assignRole']);
-
-    Route::get('/permissions', [PermissionController::class, 'index']);
-    Route::post('/permissions', [PermissionController::class, 'create']);
-    Route::get('/permissions/{id}', [PermissionController::class, 'show']);
-    Route::put('/permissions/{id}', [PermissionController::class, 'update']);
-    Route::delete('/permissions/{id}', [PermissionController::class, 'destroy']);
-
     Route::get('/assign-role', [RolePermissionController::class, 'assignRole']);
 
-    Route::apiResource('/devises', DeviseController::class);
+    Route::post('users/{userId}/assign-role', [RolePermissionController::class, 'assignRole']);// Assigner un rôle à un utilisateur
+    Route::post('users/{userId}/revoke-role', [RolePermissionController::class, 'revokeRole']);// Retirer un rôle d'un utilisateur
+    Route::post('users/{userId}/assign-permission', [RolePermissionController::class, 'assignPermission']);// Assigner une permission à un utilisateur
+    Route::post('users/{userId}/revoke-permission', [RolePermissionController::class, 'revokePermission']);// Retirer une permission d'un utilisateur
+
+    Route::post('roles/{roleId}/assign-permissions', [RolePermissionController::class, 'assignPermissionsToRole']);// Assigner une ou plusieurs permissions à un rôle
+    Route::post('roles/{roleId}/revoke-permission', [RolePermissionController::class, 'revokePermissionFromRole']);// Retirer une permission d'un rôle
+
+    Route::prefix('model-permissions')->group(function () {
+        Route::post('assign', [ModelHasPermissionController::class, 'assignPermissionToModel']);
+        Route::post('list', [ModelHasPermissionController::class, 'getModelPermissions']);
+        Route::put('update', [ModelHasPermissionController::class, 'updateModelPermission']);
+        Route::delete('revoke', [ModelHasPermissionController::class, 'revokePermissionFromModel']);
+    });
+
 // });
 
-Route::post('users/{userId}/assign-role', [RolePermissionController::class, 'assignRole']);// Assigner un rôle à un utilisateur
-Route::post('users/{userId}/revoke-role', [RolePermissionController::class, 'revokeRole']);// Retirer un rôle d'un utilisateur
-Route::post('users/{userId}/assign-permission', [RolePermissionController::class, 'assignPermission']);// Assigner une permission à un utilisateur
-Route::post('users/{userId}/revoke-permission', [RolePermissionController::class, 'revokePermission']);// Retirer une permission d'un utilisateur
 
-Route::post('roles/{roleId}/assign-permissions', [RolePermissionController::class, 'assignPermissionsToRole']);// Assigner une ou plusieurs permissions à un rôle
-Route::post('roles/{roleId}/revoke-permission', [RolePermissionController::class, 'revokePermissionFromRole']);// Retirer une permission d'un rôle
 
-    // Route::get('devises', [DeviseController::class, 'index']);            
-    // Route::post('devises', [DeviseController::class, 'store']);           
-    // Route::get('devises/{id}', [DeviseController::class, 'show']);       
-    // Route::put('devises/{id}', [DeviseController::class, 'update']);     
-    // Route::delete('devises/{id}', [DeviseController::class, 'destroy']);  
-    Route::apiResource('devises', DeviseController::class);
+
 
 
 
@@ -82,6 +80,7 @@ Route::delete('conversions/{conversion}', [ConversionController::class, 'destroy
 
 use App\Http\Controllers\TransfertController;
 Route::apiResource('/transferts', TransfertController::class);
+Route::post('/transferts/annuler/{id}', [TransfertController::class, 'annulerTransfert']);
 Route::post('/transferts/valider-retrait', [TransfertController::class, 'validerRetrait']);
 
 // routes/api.php

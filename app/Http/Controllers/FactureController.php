@@ -65,51 +65,58 @@ class FactureController extends Controller
      * Effectuer un paiement sur une facture.
      */
     public function payerFacture(Request $request, $factureId)
-        {
-            // Validation des données d'entrée
-            $validated = Validator::make($request->all(), [
-                'type' => 'required|in:virement,cash', // Type de paiement
-                'montant' => 'required|numeric|min:0', // Montant payé
-            ]);
+{
+    // Validation des données d'entrée
+    $validated = Validator::make($request->all(), [
+        'type' => 'required|in:virement,cash', // Type de paiement
+        'montant' => 'required|numeric|min:0', // Montant payé
+    ]);
 
-            if ($validated->fails()) {
-                return $this->responseJson(false, 'Validation échouée.', $validated->errors(), 422);
-            }
+    if ($validated->fails()) {
+        return $this->responseJson(false, 'Validation échouée.', $validated->errors(), 422);
+    }
 
-            try {
-                // Récupérer la facture
-                $facture = Facture::findOrFail($factureId);
+    try {
+        // Récupérer la facture
+        $facture = Facture::findOrFail($factureId);
 
-                // Vérifier si le montant dû est déjà 0
-                if ($facture->montant_du == 0) {
-                    return $this->responseJson(false, 'Cette facture est déjà payée et ne peut plus recevoir de paiements.', null, 400);
-                }
-
-                // Vérifier que le montant payé ne dépasse pas le montant dû
-                if ($request->montant > $facture->montant_du) {
-                    return $this->responseJson(false, 'Le montant payé ne peut pas être supérieur au montant dû.', null, 400);
-                }
-
-                // Créer le paiement
-                $payment = Payment::create([
-                    'facture_id' => $facture->id,
-                    'type' => $request->type,
-                    'montant' => $request->montant
-                ]);
-
-                // Mettre à jour le montant dû de la facture après paiement
-                $facture->updateMontantDu();
-
-                // Si le montant dû devient 0, marquer la facture comme payée
-                if ($facture->montant_du == 0) {
-                    $facture->statut = 'payé';
-                    $facture->save();
-                }
-
-                return $this->responseJson(true, 'Paiement effectué avec succès.', $payment, 200);
-            } catch (Exception $e) {
-                return $this->responseJson(false, 'Erreur lors du paiement de la facture.', $e->getMessage(), 500);
-            }
+        // Vérifier si le montant dû est déjà 0
+        if ($facture->montant_du == 0) {
+            return $this->responseJson(false, 'Cette facture est déjà payée et ne peut plus recevoir de paiements.', null, 400);
         }
+
+        // Vérifier que le montant payé ne dépasse pas le montant dû
+        if ($request->montant > $facture->montant_du) {
+            return $this->responseJson(false, 'Le montant payé ne peut pas être supérieur au montant dû.', null, 400);
+        }
+
+        // Créer le paiement
+        $payment = Payment::create([
+            'facture_id' => $facture->id,
+            'type' => $request->type,
+            'montant' => $request->montant
+        ]);
+
+        // Mettre à jour le montant dû de la facture après paiement
+        $facture->updateMontantDu();
+
+        // Mettre à jour le statut de la facture
+        if ($facture->montant_du == 0) {
+            $facture->statut = 'payé'; // Facture complètement payée
+        } else {
+            $facture->statut = 'partiel'; // Facture partiellement payée
+        }
+
+        $facture->save();
+
+        return $this->responseJson(true, 'Paiement effectué avec succès.', [
+            'payment' => $payment,
+            'montant_du' => $facture->montant_du
+        ], 200);
+    } catch (Exception $e) {
+        return $this->responseJson(false, 'Erreur lors du paiement de la facture.', $e->getMessage(), 500);
+    }
+}
+
 
 }

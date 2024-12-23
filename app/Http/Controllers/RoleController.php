@@ -12,27 +12,49 @@ use Exception;
 
 class RoleController extends Controller
 {
-    // Créer un rôle
-    public function create(Request $request)
+     /**
+     * Fonction pour centraliser les réponses JSON
+     */
+    protected function responseJson($success, $message, $data = null, $statusCode = 200)
     {
-        $request->validate([
-            'name' => 'required|string|unique:roles,name',
-        ]);
-
-        $role = Role::create(['name' => $request->name]);
-
         return response()->json([
-            'message' => 'Rôle créé avec succès.',
-            'role' => $role,
-        ], 201);
-    }
+            'success' => $success,
+            'message' => $message,
+            'data' => $data
+        ], $statusCode);
+    } 
+
+
+    // Créer un rôle
+    public function store(Request $request)
+    { 
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|unique:roles,name',
+            ]);
+    
+            $role = Role::create(['name' => $validated['name']]);
+    
+            return $this->responseJson(true, 'Rôle créé avec succès.', $role, 201);
+    
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return $this->responseJson(false, 'Erreur de validation.', $e->errors(), 422);
+    
+        } catch (\Exception $e) {
+            return $this->responseJson(false, 'Une erreur est survenue lors de la création du rôle.', $e->getMessage(), 500);
+        }
+    } 
 
     // Liste des rôles
     public function index()
     {
+        // $devise =  Devise::all();
         $roles = Role::all();
-
-        return response()->json(['roles' => $roles], 200);
+        return response()->json([
+            'success' => true,
+            'message' => 'Liste des Devises récupérée avec succès.',
+            'data' => $roles
+        ]);
     }
 
     // Afficher un rôle spécifique
@@ -43,8 +65,11 @@ class RoleController extends Controller
         if (!$role) {
             return response()->json(['error' => 'Rôle introuvable.'], 404);
         }
-
-        return response()->json(['role' => $role], 200);
+        return response()->json([
+            'success' => true,
+            'message' => 'Liste des Devises récupérée avec succès.',
+            'data' => $role
+        ]);
     }
 
     // Mettre à jour un rôle

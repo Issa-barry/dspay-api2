@@ -22,12 +22,11 @@ class AgenceController extends Controller
     public function store(Request $request) {
         try {
             $validated = $request->validate([
-                'reference' => 'required|string|size:6|unique:agences,reference',
                 'nom_agence' => 'required|string|max:255',
                 'phone' => 'required|string|max:20|unique:agences,phone',
                 'email' => 'required|email|max:255|unique:agences,email',
-                'statut' => 'required|in:active,attente,bloque,archive',
-                'date_creation' => 'required|date',
+                // 'statut' => 'required|in:active,attente,bloque,archive',
+                'date_creation' => 'date',
                 'adresse' => 'required|array',
                 'adresse.pays' => 'required|string|max:255',
                 'adresse.adresse' => 'required|string|max:255',
@@ -84,7 +83,7 @@ class AgenceController extends Controller
 
         try {
             $validated = $request->validate([
-                'reference' => 'string|size:6|unique:agences,reference,' . $id,
+                'reference' => 'string|min:5|max:6|unique:agences,reference,' . $id,
                 'nom_agence' => 'string|max:255',
                 'phone' => 'string|max:20|unique:agences,phone,' . $id,
                 'email' => 'email|max:255|unique:agences,email,' . $id,
