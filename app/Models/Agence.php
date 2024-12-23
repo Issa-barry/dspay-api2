@@ -9,8 +9,8 @@ class Agence extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'reference',
+    protected $fillable = [ 
+        // 'reference',
         'nom_agence',
         'phone',
         'email',

@@ -5,15 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Devise extends Model
+class Role extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nom', 'tag'];
+    protected $fillable = [
+        'name', 
+       ];
 
      public function setNomAttribute($value)
      {
-         $this->attributes['nom'] = ucfirst(strtolower($value));
+         $this->attributes['name'] = ucfirst(strtolower($value));
      }
 }
- 
