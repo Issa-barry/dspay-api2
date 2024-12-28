@@ -27,12 +27,21 @@ class GeneratePermissionsCommand extends Command
     public function handle()
     {
         $model = $this->argument('model');
-        $actions = ['afficher', 'créer', 'modifier', 'supprimer', 'all'];
+        $actions = ['afficher', 'créer', 'modifier', 'supprimer'];
 
         foreach ($actions as $action) {
-            Permission::firstOrCreate(['name' => "$action $model"]);
+            Permission::firstOrCreate(
+                [
+                    'name' => "$action $model",
+                    'model_type' => ucfirst(strtolower($model)),
+                ],
+                [
+                    'guard_name' => 'web',  
+                ]
+            );
         }
 
         $this->info("Permissions for $model created successfully!");
     }
+    
 }

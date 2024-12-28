@@ -45,6 +45,9 @@ Route::apiResource('/devises', DeviseController::class);
     Route::post('roles/{roleId}/revoke-permission', [RolePermissionController::class, 'revokePermissionFromRole']);// Retirer une permission d'un rôle
     Route::get('/roles-permissions-liste', [RolePermissionController::class, 'listRolesPermissions']); // Lister rôles et permissions
 
+    // Route pour récupérer les permissions d'un rôle spécifique
+Route::get('/role/{roleId}/permissions', [RolePermissionController::class, 'getRolePermissions']);
+
     Route::prefix('model-permissions')->group(function () {
         Route::post('assign', [ModelHasPermissionController::class, 'assignPermissionToModel']);
         Route::post('list', [ModelHasPermissionController::class, 'getModelPermissions']);

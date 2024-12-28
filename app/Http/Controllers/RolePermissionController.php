@@ -163,16 +163,34 @@ class RolePermissionController extends Controller
      {
          $roles = Role::with('permissions')->get();
         //  $permissions = Permission::all();
-        $permissions = Permission::all()->groupBy('model_type');
+         $permissions = Permission::all()->groupBy('model_type');
      
          return response()->json([
              'success' => true,
              'message' => 'Liste des rôles et permissions récupérée avec succès.',
              'data' => [
                  'roles' => $roles,
-                 'permissions' => $permissions,
+                //  'permissions' => $permissions,
              ]
          ], 200);
      }
+
+     public function getRolePermissions($roleId)
+        {
+            // Trouver le rôle avec ses permissions associées
+            $role = Role::with('permissions')->findOrFail($roleId);
+
+            // Organiser les permissions par modèle (si vous souhaitez une structure similaire à celle de la réponse précédente)
+            $permissions = $role->permissions->groupBy('model_type');
+
+            return response()->json([
+                'success' => true,
+                'message' => "Les permissions du rôle {$role->name} ont été récupérées avec succès.",
+                'data' => [
+                    'role' => $role,               // Renvoyer les informations du rôle
+                    // 'permissions' => $permissions  // Renvoyer les permissions groupées par 'model_type'
+                ]
+            ], 200);
+        }
      
 }
