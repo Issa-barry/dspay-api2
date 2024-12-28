@@ -7,7 +7,7 @@ use Illuminate\Auth\Events\Verified;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RolePermissionController;
-use App\Http\Controllers\Api\DeviseController;
+use App\Http\Controllers\DeviseController;
 use App\Http\Controllers\ModelHasPermissionController;
 
 Route::apiResource('users', UserController::class);

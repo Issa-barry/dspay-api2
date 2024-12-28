@@ -31,9 +31,9 @@ class RoleController extends Controller
         try {
             $validated = $request->validate([
                 'name' => 'required|string|unique:roles,name',
-            ]);
-    
-            $role = Role::create(['name' => $validated['name']]);
+            ]); 
+            
+            $role = Role::create(['name' => ucfirst(strtolower($validated['name']))]);
     
             return $this->responseJson(true, 'Rôle créé avec succès.', $role, 201);
     

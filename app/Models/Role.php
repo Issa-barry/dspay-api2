@@ -15,9 +15,12 @@ class Role extends SpatieRole
         'name',
     ];
 
-    // Setter pour le champ "name"
-    public function setNomAttribute($value)
+     /**
+     * Mutator pour capitaliser la première lettre du nom du rôle
+     */
+    public function setNameAttribute($value)
     {
+        // Capitalise la première lettre du nom du rôle et met le reste en minuscules
         $this->attributes['name'] = ucfirst(strtolower($value));
     }
 

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class PermissionsSeeder extends Seeder
 {
@@ -15,22 +16,30 @@ class PermissionsSeeder extends Seeder
     public function run()
     {
         // Exemple de modèles pour lesquels créer des permissions
-        $models = ['Transfert', 'Contact', 'Agence', 'Taux']; 
+        $models = ['Transfert', 'Contact', 'Agence', 'Taux', 'Post']; 
 
         // Liste des actions possibles
         $actions = ['afficher', 'créer', 'modifier', 'supprimer'];
 
+        // Vérifier si le rôle Admin existe, sinon le créer
+        $adminRole = Role::firstOrCreate(['name' => 'Admin']);
+
         foreach ($models as $model) {
             foreach ($actions as $action) {
                 // Créer ou récupérer la permission pour l'action et le modèle spécifiés
-                Permission::firstOrCreate([
+                $permission = Permission::firstOrCreate([
                     'name' => "$action $model",
                     'model_type' => ucfirst(strtolower($model)), // Mettre la première lettre du modèle en majuscule
                 ]);
+
+                // Assigner la permission au rôle Admin
+                if (!$adminRole->hasPermissionTo($permission)) {
+                    $adminRole->givePermissionTo($permission);
+                }
             }
         }
 
-        $this->command->info('Permissions have been seeded successfully!');
+        $this->command->info('Permissions have been seeded and assigned to the Admin role successfully!');
     }
 
     /**
