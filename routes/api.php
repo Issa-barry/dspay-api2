@@ -9,7 +9,8 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\DeviseController;
 use App\Http\Controllers\ModelHasPermissionController;
-
+use App\Http\Controllers\AgenceController;
+ 
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -30,7 +31,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('users', UserController::class);
     Route::get('contact', [UserController::class, 'createContact']);
-    Route::apiResource('agences', AgenceController::class);
+    Route::apiResource('agences', AgenceController::class); 
     Route::get('/check-token-header', [AuthController::class, 'checkTokenInHeader']);
 
     Route::apiResource('roles', RoleController::class);
@@ -66,6 +67,8 @@ Route::apiResource('/devises', DeviseController::class);
 
 Route::post('roles/{roleId}/assign-permissions', [RolePermissionController::class, 'assignPermissionsToRole']);// Assigner une ou plusieurs permissions à un rôle
 Route::post('roles/{roleId}/revoke-permission', [RolePermissionController::class, 'revokePermissionFromRole']);// Retirer une permission d'un rôle
+Route::get('/roles-permissions-liste', [RolePermissionController::class, 'listRolesPermissions']); // Lister rôles et permissions
+Route::get('/role/{roleId}/permissions', [RolePermissionController::class, 'getRolePermissions']);// Route pour récupérer les permissions d'un rôle spécifique
 
     // Route::get('devises', [DeviseController::class, 'index']);            
     // Route::post('devises', [DeviseController::class, 'store']);           
@@ -76,8 +79,6 @@ Route::post('roles/{roleId}/revoke-permission', [RolePermissionController::class
 
 
 
-use App\Http\Controllers\AgenceController;
-Route::apiResource('agences', AgenceController::class);
  
 use App\Http\Controllers\AgentController;
 Route::apiResource('agents', AgentController::class);
