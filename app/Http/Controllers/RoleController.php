@@ -26,19 +26,29 @@ class RoleController extends Controller
 
 
     // Créer un rôle
-    public function create(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|unique:roles,name',
+    public function store(Request $request)
+    { 
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|unique:roles,name',
+            ]);
+               
+        $validated['name'] = ucfirst($validated['name']);
+         // Ajouter le guard_name lors de la création
+        $role = Role::create([
+            'name' => $validated['name'],
+            'guard_name' => 'web', // Spécifier explicitement le guard_name
         ]);
-
-        $role = Role::create(['name' => $request->name]);
-
-        return response()->json([
-            'message' => 'Rôle créé avec succès.',
-            'role' => $role,
-        ], 201);
-    }
+    
+            return $this->responseJson(true, 'Rôle créé avec succès.', $role, 201);
+    
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return $this->responseJson(false, 'Erreur de validation.', $e->errors(), 422);
+    
+        } catch (\Exception $e) {
+            return $this->responseJson(false, 'Une erreur est survenue lors de la création du rôle.', $e->getMessage(), 500);
+        }
+    } 
 
     // Liste des rôles
     public function index()
