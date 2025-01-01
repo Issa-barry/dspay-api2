@@ -7,7 +7,7 @@ use Illuminate\Auth\Events\Verified;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RolePermissionController;
-use App\Http\Controllers\Api\DeviseController;
+use App\Http\Controllers\DeviseController;
 use App\Http\Controllers\ModelHasPermissionController;
 
 Route::apiResource('users', UserController::class);
@@ -43,6 +43,10 @@ Route::apiResource('/devises', DeviseController::class);
 
     Route::post('roles/{roleId}/assign-permissions', [RolePermissionController::class, 'assignPermissionsToRole']);// Assigner une ou plusieurs permissions à un rôle
     Route::post('roles/{roleId}/revoke-permission', [RolePermissionController::class, 'revokePermissionFromRole']);// Retirer une permission d'un rôle
+    Route::get('/roles-permissions-liste', [RolePermissionController::class, 'listRolesPermissions']); // Lister rôles et permissions
+
+    // Route pour récupérer les permissions d'un rôle spécifique
+Route::get('/role/{roleId}/permissions', [RolePermissionController::class, 'getRolePermissions']);
 
     Route::prefix('model-permissions')->group(function () {
         Route::post('assign', [ModelHasPermissionController::class, 'assignPermissionToModel']);
@@ -52,12 +56,6 @@ Route::apiResource('/devises', DeviseController::class);
     });
 
 // });
-
-
-
-
-
-
 
 use App\Http\Controllers\AgenceController;
 Route::apiResource('agences', AgenceController::class);

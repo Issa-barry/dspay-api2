@@ -1,5 +1,5 @@
 <?php
- namespace App\Http\Controllers\Api;
+ namespace App\Http\Controllers;
 
  use App\Http\Controllers\Controller;
  use App\Models\Devise;
@@ -38,7 +38,7 @@ use Illuminate\Http\Request;
         {
             try {
                 $validated = $request->validate([
-                    'nom' => 'required|string|max:255',
+                    'nom' => 'required|string|max:255|unique:devises',
                     'tag' => 'required|string|max:10|unique:devises',
                 ]);
 
