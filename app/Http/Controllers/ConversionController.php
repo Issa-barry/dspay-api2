@@ -22,7 +22,7 @@ class ConversionController extends Controller
         ], $statusCode);
     }
 
-    /**
+    /** 
      * Créer une conversion de devise.
      *
      * @param  \Illuminate\Http\Request  $request

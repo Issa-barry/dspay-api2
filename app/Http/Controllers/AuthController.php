@@ -11,6 +11,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\Auth;
+use Laravel\Sanctum\PersonalAccessToken;
 use Spatie\Permission\Models\Role;
 
 class AuthController extends Controller
@@ -97,19 +98,18 @@ class AuthController extends Controller
             ], 400);
         }
 
-        $token = $user->createToken('Personal Access Token')->plainTextToken;
+        $token = $user->createToken('access_token')->plainTextToken;
 
         return response()->json([
             'message' => 'Connexion réussie.',
             'user' => $user,
-            'token' => $token,
+            'access_token' => $token,
         ], 200);
     }
 
     public function logout(Request $request)
         {
             $request->user()->tokens()->delete();
-
             return response()->json([
                 'message' => 'Déconnecté de tous les appareils.',
             ], 200);
@@ -222,4 +222,27 @@ class AuthController extends Controller
             'message' => 'Verification email resent successfully.'
         ], 200);
     }
+
+    // Vérification du token dans l'en-tête
+    public function checkTokenInHeader(Request $request)
+    {
+        $token = $request->header('Authorization');
+
+        if (!$token) {
+            return response()->json(['error' => 'Token manquant dans l\'en-tête.'], 422);
+        }
+
+        if (str_starts_with($token, 'Bearer ')) {
+            $token = substr($token, 7);
+        }
+
+        $tokenExists = PersonalAccessToken::where('token', hash('sha256', $token))->exists();
+
+        if (!$tokenExists) {
+            return response()->json(['message' => 'Token invalide ou inexistant.'], 404);
+        }
+
+        return response()->json(['message' => 'Token valide.'], 200);
+    }
+
 }
