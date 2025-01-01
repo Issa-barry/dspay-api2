@@ -16,3 +16,4 @@ class Devise extends Model
          $this->attributes['nom'] = ucfirst(strtolower($value));
      }
 }
+ 

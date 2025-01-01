@@ -8,7 +8,20 @@ use Spatie\Permission\Models\Permission;
 use App\Models\User;
 
 class RolePermissionController extends Controller
-{ 
+{  
+      /**
+     * Fonction pour centraliser les réponses JSON
+     */
+    protected function responseJson($success, $message, $data = null, $statusCode = 200)
+    {
+        return response()->json([
+            'success' => $success,
+            'message' => $message,
+            'data' => $data
+        ], $statusCode);
+    } 
+
+
     /**
      * Assigner un rôle à un utilisateur.
      *
@@ -144,4 +157,40 @@ class RolePermissionController extends Controller
             'message' => "La permission {$request->permission} a été retirée du rôle {$role->name}.",
         ]);
     }
+
+     // Lister tous les rôles et permissions
+     public function listRolesPermissions()
+     {
+         $roles = Role::with('permissions')->get();
+        //  $permissions = Permission::all();
+         $permissions = Permission::all()->groupBy('model_type');
+     
+         return response()->json([
+             'success' => true,
+             'message' => 'Liste des rôles et permissions récupérée avec succès.',
+             'data' => [
+                 'roles' => $roles,
+                //  'permissions' => $permissions,
+             ]
+         ], 200);
+     }
+
+     public function getRolePermissions($roleId)
+        {
+            // Trouver le rôle avec ses permissions associées
+            $role = Role::with('permissions')->findOrFail($roleId);
+
+            // Organiser les permissions par modèle (si vous souhaitez une structure similaire à celle de la réponse précédente)
+            $permissions = $role->permissions->groupBy('model_type');
+
+            return response()->json([
+                'success' => true,
+                'message' => "Les permissions du rôle {$role->name} ont été récupérées avec succès.",
+                'data' => [
+                    'role' => $role,               // Renvoyer les informations du rôle
+                    // 'permissions' => $permissions  // Renvoyer les permissions groupées par 'model_type'
+                ]
+            ], 200);
+        }
+     
 }
