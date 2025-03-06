@@ -10,6 +10,8 @@ use App\Http\Controllers\DeviseController;
  use App\Http\Controllers\AgenceController;
 use App\Http\Controllers\AgentController;
 use App\Http\Controllers\User\createUserController;
+use App\Http\Controllers\User\DeleteUserController;
+use App\Http\Controllers\User\ShowUserController;
 use App\Http\Controllers\User\updateUserController;
 use App\Http\Controllers\User\UserController;
 
@@ -28,8 +30,11 @@ Route::middleware('auth:sanctum')->group(function () {
  
 // Route::middleware('auth:sanctum')->group(function () {
 /**  USER */
+Route::get('/users', [ShowUserController::class, 'index']);
+Route::get('/users/{id}', [ShowUserController::class, 'show']);
 Route::post('/users', [createUserController::class, 'store']);
 Route::put('/users/{id}', [updateUserController::class, 'update']);
+Route::delete('/users/{id}', [DeleteUserController::class, 'destroy']);
 
 
 
