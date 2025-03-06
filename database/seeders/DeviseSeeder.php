@@ -13,16 +13,13 @@ class DeviseSeeder extends Seeder
      * @return void
      */
     public function run()
-    {
-        // Ajouter des devises par défaut
+    { 
         $devises = [
             ['nom' => 'Dollar US', 'tag' => '$'],
             ['nom' => 'Euro', 'tag' => '€'],
             ['nom' => 'Franc-Guinéen', 'tag' => 'GNF'],
-            // Ajoutez d'autres devises selon votre besoin
         ];
-
-        // Insertion des devises dans la base de données
+ 
         foreach ($devises as $devise) {
             Devise::create($devise);
         }

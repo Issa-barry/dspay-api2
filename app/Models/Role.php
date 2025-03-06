@@ -20,24 +20,41 @@ class Role extends SpatieRole
      */
     public function setNameAttribute($value)
     {
-        // Capitalise la première lettre du nom du rôle et met le reste en minuscules
-        $this->attributes['name'] = ucfirst(strtolower($value));
+         $this->attributes['name'] = ucfirst(strtolower($value));
     }
 
-    // Relation standard avec les permissions
-    public function permissions(): BelongsToMany
+     public function permissions(): BelongsToMany
     {
         return parent::permissions(); // Hérite de la relation définie dans SpatieRole
     }
 
-    // Relation supplémentaire pour les permissions spécifiques à un modèle (si nécessaire)
-    public function modelPermissions(): BelongsToMany
+    /**
+     * Relation avec les utilisateurs (BelongsToMany).
+     */
+    public function users(): BelongsToMany
     {
-        return $this->belongsToMany(
-            Permission::class,
-            'role_has_model_permissions',
-            'role_id',
-            'permission_id'
-        )->withPivot('model_type', 'model_id');
+        return $this->belongsToMany(User::class, 'role_user', 'role_id', 'user_id');
     }
+
+    /**
+     * Vérifie si le rôle est associé à des utilisateurs.
+     */
+    public function hasUsers(): bool
+    {
+        return $this->users()->exists();
+    }
+    
+    // public static function boot()
+    //     {
+    //         parent::boot();
+
+    //         static::deleting(function ($role) {
+    //             // Supprimer les relations utilisateur-rôle dans la table pivot
+    //             $role->users()->detach();
+
+    //             // Supprimer les permissions liées
+    //             $role->permissions()->detach();
+    //         });
+    //     }
+
 }

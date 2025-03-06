@@ -8,8 +8,8 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\DeviseController;
-use App\Http\Controllers\ModelHasPermissionController;
-use App\Http\Controllers\AgenceController;
+ use App\Http\Controllers\AgenceController;
+use App\Http\Controllers\AgentController;
  
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -18,70 +18,44 @@ Route::post('/resend-verification-email', [AuthController::class, 'resendVerific
 Route::post('/ResetPassword', [AuthController::class, 'resetPassword']);
 Route::post('/sendResetPasswordLink', [AuthController::class, 'sendResetPasswordLink']);
 Route::get('/verify-email/{id}/{hash}', [AuthController::class, 'verifyEmail'])->name('verification.verify');
+// Route::post('resend-verification-email', [AuthController::class, 'resendVerificationEmail']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/check-token-header', [AuthController::class, 'checkTokenInHeader']);
+});
+ 
+// Route::middleware('auth:sanctum')->group(function () {
 
-    // Route::get('devises', [DeviseController::class, 'index']);            
-    // Route::post('devises', [DeviseController::class, 'store']);           
-    // Route::get('devises/{id}', [DeviseController::class, 'show']);       
-    // Route::put('devises/{id}', [DeviseController::class, 'update']);     
-    // Route::delete('devises/{id}', [DeviseController::class, 'destroy']);  
-    Route::apiResource('devises', DeviseController::class);
-
+    Route::apiResource('/devises', DeviseController::class);
+    
+    Route::apiResource('agents', AgentController::class);
     Route::apiResource('users', UserController::class);
     Route::get('contact', [UserController::class, 'createContact']);
     Route::apiResource('agences', AgenceController::class); 
-    Route::get('/check-token-header', [AuthController::class, 'checkTokenInHeader']);
-
-    Route::apiResource('roles', RoleController::class);
-});
-// Route::post('resend-verification-email', [AuthController::class, 'resendVerificationEmail']);
-
-
-Route::apiResource('/devises', DeviseController::class);
-
-// Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/roles', [RoleController::class, 'index']);
-    Route::post('/roles', [RoleController::class, 'create']);
-    Route::get('/roles/{id}', [RoleController::class, 'show']);
-    Route::put('/roles/{id}', [RoleController::class, 'update']);
-    Route::delete('/roles/{id}', [RoleController::class, 'destroy']);
-    Route::post('/assign-role', [RoleController::class, 'assignRole']);
-
+  
     Route::get('/permissions', [PermissionController::class, 'index']);
     Route::post('/permissions', [PermissionController::class, 'create']);
     Route::get('/permissions/{id}', [PermissionController::class, 'show']);
     Route::put('/permissions/{id}', [PermissionController::class, 'update']);
     Route::delete('/permissions/{id}', [PermissionController::class, 'destroy']);
 
-    Route::get('/assign-role', [RolePermissionController::class, 'assignRole']);
-
-    Route::apiResource('/devises', DeviseController::class);
-// });
-
-    Route::post('users/{userId}/assign-role', [RolePermissionController::class, 'assignRole']);// Assigner un rôle à un utilisateur
-    Route::post('users/{userId}/revoke-role', [RolePermissionController::class, 'revokeRole']);// Retirer un rôle d'un utilisateur
+    Route::apiResource('roles', RoleController::class);
+    Route::post('/assign-role', [RoleController::class, 'assignRole']); 
+    // Route::post('users/{userId}/assign-role', [RoleController::class, 'assignRole']);// Assigner un rôle à un utilisateur
+   
+    //Revoke ne marche pas
+   // Route::post('users/{userId}/revoke-role', [RoleController::class, 'revokeRole']);// Retirer un rôle d'un utilisateur
     Route::post('users/{userId}/assign-permission', [RolePermissionController::class, 'assignPermission']);// Assigner une permission à un utilisateur
     Route::post('users/{userId}/revoke-permission', [RolePermissionController::class, 'revokePermission']);// Retirer une permission d'un utilisateur
 
-Route::post('roles/{roleId}/assign-permissions', [RolePermissionController::class, 'assignPermissionsToRole']);// Assigner une ou plusieurs permissions à un rôle
-Route::post('roles/{roleId}/revoke-permission', [RolePermissionController::class, 'revokePermissionFromRole']);// Retirer une permission d'un rôle
-Route::get('/roles-permissions-liste', [RolePermissionController::class, 'listRolesPermissions']); // Lister rôles et permissions
-Route::get('/role/{roleId}/permissions', [RolePermissionController::class, 'getRolePermissions']);// Route pour récupérer les permissions d'un rôle spécifique
-
-    // Route::get('devises', [DeviseController::class, 'index']);            
-    // Route::post('devises', [DeviseController::class, 'store']);           
-    // Route::get('devises/{id}', [DeviseController::class, 'show']);       
-    // Route::put('devises/{id}', [DeviseController::class, 'update']);     
-    // Route::delete('devises/{id}', [DeviseController::class, 'destroy']);  
-    Route::apiResource('devises', DeviseController::class);
-
-
-
- 
-use App\Http\Controllers\AgentController;
-Route::apiResource('agents', AgentController::class);
+    Route::post('/roles/find-by-name', [RoleController::class, 'findRoleByName']);
+    Route::get('roles/{id}/check-users', [RoleController::class, 'checkRoleUsers']);
+    Route::get('/roles-permissions-liste', [RolePermissionController::class, 'listRolesPermissions']); // Lister rôles et permissions
+    Route::post('roles/{roleId}/assign-permissions', [RolePermissionController::class, 'assignPermissionsToRole']);// Assigner une ou plusieurs permissions à un rôle
+    Route::post('roles/{roleId}/revoke-permission', [RolePermissionController::class, 'revokePermissionFromRole']);// Retirer une permission d'un rôle
+    Route::get('/role/{roleId}/permissions', [RolePermissionController::class, 'getRolePermissions']);// Route pour récupérer les permissions d'un rôle spécifique
+// });
 
 use App\Http\Controllers\TauxEchangeController;
 Route::get('taux-echanges', [TauxEchangeController::class, 'index']);

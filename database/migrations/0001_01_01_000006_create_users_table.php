@@ -24,7 +24,8 @@ return new class extends Migration
             $table->string('prenom');
             $table->string('phone');
             $table->string('password'); 
-            $table->rememberToken();
+            $table->foreignId('role_id')->constrained('roles')->onDelete('restrict')->default(1); // Relation avec la table des rôles
+            $table->rememberToken(); 
             $table->timestamps();
         });
 

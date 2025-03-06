@@ -23,48 +23,6 @@ class RolePermissionController extends Controller
 
 
     /**
-     * Assigner un rôle à un utilisateur.
-     *
-     * @param Request $request
-     * @param int $userId
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function assignRole(Request $request, $userId)
-    {
-        $request->validate([
-            'role' => 'required|exists:roles,name',
-        ]);
-
-        $user = User::findOrFail($userId);
-        $user->assignRole($request->role);
-
-        return response()->json([
-            'message' => "Le rôle {$request->role} a été assigné à l'utilisateur."
-        ]);
-    }
-
-    /**
-     * Retirer un rôle d'un utilisateur.
-     *
-     * @param Request $request
-     * @param int $userId
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function revokeRole(Request $request, $userId)
-    {
-        $request->validate([
-            'role' => 'required|exists:roles,name',
-        ]);
-
-        $user = User::findOrFail($userId);
-        $user->removeRole($request->role);
-
-        return response()->json([
-            'message' => "Le rôle {$request->role} a été retiré de l'utilisateur."
-        ]);
-    }
-
-    /**
      * Assigner une permission à un utilisateur.
      *
      * @param Request $request

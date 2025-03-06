@@ -16,13 +16,14 @@ class PermissionsSeeder extends Seeder
     public function run()
     {
         // Exemple de modèles pour lesquels créer des permissions
-        $models = ['Transfert', 'Contact', 'Agence', 'Taux', 'Post']; 
+        $models = ['Transfert', 'Contact', 'Agence','Agents','Factures', 'Taux', 'Devises', 'Users', 'Roles', 'Permissions', 
+                   'Dashboard-RH', 'Dashboard-CA']; 
 
         // Liste des actions possibles
         $actions = ['afficher', 'créer', 'modifier', 'supprimer'];
 
         // Vérifier si le rôle Admin existe, sinon le créer
-        $adminRole = Role::firstOrCreate(['name' => 'Admin']);
+        $adminRole = Role::firstOrCreate(['name' => 'Administrateur']);
 
         foreach ($models as $model) {
             foreach ($actions as $action) {

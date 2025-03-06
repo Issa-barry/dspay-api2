@@ -16,7 +16,8 @@ class UserController extends Controller
     // Liste des utilisateurs avec leur adresse
     public function index()
     {
-        $users = User::with('adresse')->get();
+        // $users = User::with('adresse')->get();
+        $users = User::with(['adresse', 'roles'])->get();
         return response()->json([
             'success' => true,
             'message' => 'Liste des utilisateurs récupérée avec succès.',
@@ -25,12 +26,12 @@ class UserController extends Controller
             })
             // 'data' => $users
         ]);
-    }
+    } 
 
     // Afficher un utilisateur par ID
     public function show($id)
     {
-        $user = User::with('adresse')->find($id);
+        $user = User::with(['adresse', 'roles'])->find($id);
 
         if (!$user) {
             return response()->json([
@@ -38,11 +39,12 @@ class UserController extends Controller
                 'message' => 'Utilisateur non trouvé.'
             ], 404);
         }
-
+ 
         return response()->json([
             'success' => true,
             'message' => 'Détails de l\'utilisateur récupérés avec succès.',
-            'data' => array_merge($user->toArray(), ['role' => $user->role])
+            'data' => $user
+            // 'data' => array_merge($user->toArray(), ['role' => $user->role])
         ]);
     }
 
@@ -63,11 +65,13 @@ class UserController extends Controller
             'adresse.adresse' => 'required|string|max:255',
             'adresse.complement_adresse' => 'nullable|string|max:255',
             'adresse.ville' => 'required|string|max:255',
+            'adresse.quartier' => 'required|string|max:255',
             'adresse.code_postal' => 'required|string|max:20',
         ]);
 
         // Créer l'adresse
         $adresse = Adresse::create($validated['adresse']);
+        $role = Role::where('name', $validated['role'])->firstOrFail();
 
         try {
             $user = User::create([
@@ -78,7 +82,8 @@ class UserController extends Controller
                 'phone' => $validated['phone'],
                 'date_naissance' => $validated['date_naissance'],
                 'password' => Hash::make($validated['password']),
-                'adresse_id' => $adresse->id
+                'adresse_id' => $adresse->id,
+                'role_id' => $role->id, // Ajout de l'ID du rôle
             ]);
 
             $user->assignRole($validated['role']);
@@ -98,6 +103,8 @@ class UserController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+
+        
     }
 
     // Mettre à jour un utilisateur
