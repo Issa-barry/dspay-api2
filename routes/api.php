@@ -2,15 +2,16 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\UserController;
-use Illuminate\Auth\Events\Verified;
+ use Illuminate\Auth\Events\Verified;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\DeviseController;
  use App\Http\Controllers\AgenceController;
 use App\Http\Controllers\AgentController;
- 
+use App\Http\Controllers\User\createUserController;
+use App\Http\Controllers\User\updateUserController;
+use App\Http\Controllers\User\UserController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -26,12 +27,18 @@ Route::middleware('auth:sanctum')->group(function () {
 });
  
 // Route::middleware('auth:sanctum')->group(function () {
+/**  USER */
+Route::post('/users', [createUserController::class, 'store']);
+Route::put('/users/{id}', [updateUserController::class, 'update']);
+
+
+
 
     Route::apiResource('/devises', DeviseController::class);
     
     Route::apiResource('agents', AgentController::class);
-    Route::apiResource('users', UserController::class);
-    Route::get('contact', [UserController::class, 'createContact']);
+    // Route::apiResource('users', UserController::class);
+    // Route::get('contact', [UserController::class, 'createContact']);
     Route::apiResource('agences', AgenceController::class); 
   
     Route::get('/permissions', [PermissionController::class, 'index']);

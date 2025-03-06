@@ -35,10 +35,10 @@ class User extends Authenticatable implements MustVerifyEmail
         'role_id', 
     ];
 
-    // public function role()
-    // {
-    //     return $this->roles()->first(); // Retourne le premier rôle associé
-    // }
+    public function role()
+    {
+        return $this->roles()->first(); // Retourne le premier rôle associé
+    }
     
     public function adresse()
     {
