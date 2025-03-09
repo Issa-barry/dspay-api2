@@ -37,9 +37,7 @@ Route::put('/users/{id}', [updateUserController::class, 'update']);
 Route::delete('/users/{id}', [DeleteUserController::class, 'destroy']);
 
 
-
-
-    Route::apiResource('/devises', DeviseController::class);
+Route::apiResource('/devises', DeviseController::class);
     
     Route::apiResource('agents', AgentController::class);
     // Route::apiResource('users', UserController::class);

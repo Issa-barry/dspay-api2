@@ -25,13 +25,13 @@ class TransfertController extends Controller
             'message' => $message,
             'data' => $data
         ], $statusCode);
-    }
+    } 
 
     /**
      * Créer un transfert de devise.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response 
      */
     public function store(Request $request)
     {
@@ -58,7 +58,7 @@ class TransfertController extends Controller
             // Récupérer les devises
             $deviseSource = Devise::find($request->devise_source_id);
             $deviseCible = Devise::find($request->devise_cible_id);
-
+ 
             if (!$deviseSource || !$deviseCible) {
                 return $this->responseJson(false, 'Devise source ou cible introuvable.', null, 404);
             }
@@ -127,9 +127,19 @@ class TransfertController extends Controller
             // Masquer le code avant de renvoyer la réponse
             $transfert->makeHidden('code');
 
-            return $this->responseJson(true, 'Transfert effectué avec succès.', $transfert, 201);
+            return response()->json([
+                'success' => true,
+                'message' => 'Utilisateur créé avec succès. Veuillez vérifier votre email.',
+                'data' => $transfert
+            ], 201);
+            // return $this->responseJson(true, 'Transfert effectué avec succès.', $transfert, 201);
         } catch (Exception $e) {
-            return $this->responseJson(false, 'Une erreur est survenue lors de la création du transfert.', $e->getMessage(), 500);
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la création de l\'utilisateur.',
+                'error' => $e->getMessage()
+            ], 500);
+            // return $this->responseJson(false, 'Une erreur est survenue lors de la création du transfert.', $e->getMessage(), 500);
         }
     }
 

@@ -15,7 +15,7 @@ class createUserController extends Controller
     public function store(Request $request)
     {
         try {
-            $validated = $request->validate([ 
+            $validated = $request->validate([  
                 'civilite' => 'in:Mr,Mme,Mlle,Autre',
                 'nom' => 'required|string|max:255',
                 'prenom' => 'required|string|max:255',

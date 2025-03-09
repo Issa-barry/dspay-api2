@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 
 class ShowUserController extends Controller
 {
-    
     public function index()
     { 
         $users = User::with(['adresse', 'roles'])->get();
