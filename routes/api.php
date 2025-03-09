@@ -29,12 +29,6 @@ Route::middleware('auth:sanctum')->group(function () {
 });
  
 // Route::middleware('auth:sanctum')->group(function () {
-/**  USER */
-Route::get('/users', [ShowUserController::class, 'index']);
-Route::get('/users/{id}', [ShowUserController::class, 'show']);
-Route::post('/users', [createUserController::class, 'store']);
-Route::put('/users/{id}', [updateUserController::class, 'update']);
-Route::delete('/users/{id}', [DeleteUserController::class, 'destroy']);
 
 
 Route::apiResource('/devises', DeviseController::class);
@@ -74,11 +68,22 @@ Route::put('taux-echanges/{tauxEchange}', [TauxEchangeController::class, 'update
 Route::delete('taux-echanges/{tauxEchange}', [TauxEchangeController::class, 'destroy']);
 
 use App\Http\Controllers\ConversionController;
+use App\Http\Controllers\Transfert\TransfertEnvoieController;
+
 Route::get('conversions', [ConversionController::class, 'index']);
 Route::post('conversions', [ConversionController::class, 'store']);
 Route::get('conversions/{conversion}', [ConversionController::class, 'show']);
 Route::put('conversions/{conversion}', [ConversionController::class, 'update']);
 Route::delete('conversions/{conversion}', [ConversionController::class, 'destroy']);
 
-use App\Http\Controllers\TransfertController;
-Route::apiResource('/transferts', TransfertController::class);
+/**  USER */
+Route::get('/users', [ShowUserController::class, 'index']);
+Route::get('/users/{id}', [ShowUserController::class, 'show']);
+Route::post('/users', [createUserController::class, 'store']);
+Route::put('/users/{id}', [updateUserController::class, 'update']);
+Route::delete('/users/{id}', [DeleteUserController::class, 'destroy']);
+
+
+/**  Transfert */
+Route::post('/transferts/envoie', [TransfertEnvoieController::class, 'store']);
+
