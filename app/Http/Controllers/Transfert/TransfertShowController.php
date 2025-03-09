@@ -69,4 +69,33 @@ class TransfertShowController extends Controller
             return $this->responseJson(false, 'Erreur lors de la récupération du transfert.', $e->getMessage(), 500);
         }
     }
+
+    /**
+     * Afficher un transfert spécifique par son code.
+     *
+     * @param  string  $code
+     * @return \Illuminate\Http\Response
+     */
+    public function showByCode($code)
+    {
+        try {
+            // Recherche du transfert par code
+            $transfert = Transfert::with(['deviseSource', 'deviseCible', 'tauxEchange'])
+                ->where('code', $code)
+                ->first();
+
+            if (!$transfert) {
+                return $this->responseJson(false, 'Transfert non trouvé.', null, 404);
+            }
+
+            // Masquer le code si le statut n'est pas "retiré"
+            if ($transfert->statut === 'en_cours') {
+                $transfert->makeHidden('code');
+            }
+
+            return $this->responseJson(true, 'Transfert récupéré avec succès.', $transfert);
+        } catch (Exception $e) {
+            return $this->responseJson(false, 'Erreur lors de la récupération du transfert.', $e->getMessage(), 500);
+        }
+    }
 }

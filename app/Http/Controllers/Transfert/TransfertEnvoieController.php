@@ -123,7 +123,7 @@ class TransfertEnvoieController extends Controller
             
             Mail::to($transfert->expediteur_email)->send(new TransfertNotification($transfert));
 
-            $transfert->makeHidden('code');
+            $transfert->makeHidden('code'); 
 
             return response()->json([
                 'success' => true,

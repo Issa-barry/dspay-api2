@@ -16,7 +16,7 @@ class Transfert extends Model
         'devise_cible_id',
         'taux_echange_id',
         'montant',
-        'montant_converti',  
+        'montant_converti',
         'receveur_nom',
         'receveur_prenom',
         'receveur_phone',
