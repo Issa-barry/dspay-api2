@@ -68,7 +68,10 @@ Route::put('taux-echanges/{tauxEchange}', [TauxEchangeController::class, 'update
 Route::delete('taux-echanges/{tauxEchange}', [TauxEchangeController::class, 'destroy']);
 
 use App\Http\Controllers\ConversionController;
+use App\Http\Controllers\Transfert\TransfertAnnulerController;
 use App\Http\Controllers\Transfert\TransfertEnvoieController;
+use App\Http\Controllers\Transfert\TransfertRetraitController;
+use App\Http\Controllers\Transfert\TransfertShowController;
 
 Route::get('conversions', [ConversionController::class, 'index']);
 Route::post('conversions', [ConversionController::class, 'store']);
@@ -86,4 +89,8 @@ Route::delete('/users/{id}', [DeleteUserController::class, 'destroy']);
 
 /**  Transfert */
 Route::post('/transferts/envoie', [TransfertEnvoieController::class, 'store']);
-
+Route::get('/transferts/all', [TransfertShowController::class, 'index']);
+Route::get('/transferts/byId/{id}', [TransfertShowController::class, 'show']);
+Route::post('/transferts/annuler/{id}', [TransfertAnnulerController::class, 'annulerTransfert']);
+Route::post('/transferts/envoie', [TransfertEnvoieController::class, 'store']);
+Route::post('/transferts/retrait', [TransfertRetraitController::class, 'validerRetrait']);
