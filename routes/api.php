@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\Agence\AgenceCreateController;
+use App\Http\Controllers\Agence\AgenceDeleteController;
+use App\Http\Controllers\Agence\AgenceShowController;
+use App\Http\Controllers\Agence\AgenceUpdateController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -35,9 +39,7 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::apiResource('/devises', DeviseController::class);
 
 Route::apiResource('agents', AgentController::class);
-// Route::apiResource('users', UserController::class);
-// Route::get('contact', [UserController::class, 'createContact']);
-Route::apiResource('agences', AgenceController::class);
+ 
 
 Route::get('/permissions', [PermissionController::class, 'index']);
 Route::post('/permissions', [PermissionController::class, 'create']);
@@ -90,9 +92,14 @@ Route::post('/users', [createUserController::class, 'store']);
 Route::put('/users/{id}', [updateUserController::class, 'update']);
 Route::delete('/users/{id}', [DeleteUserController::class, 'destroy']);
 
+/**  AGENCE */
+Route::post('/agences/create', [AgenceCreateController::class, 'store']);
+Route::get('/agences/all', [AgenceShowController::class, 'index']);
+Route::get('/agences/getById/{id}', [AgenceShowController::class, 'show']);
+Route::put('/agences/updateById/{id}', [AgenceUpdateController::class, 'updateById']);
+Route::delete('/agences/deleteById/{id}', [AgenceDeleteController::class, 'deleteById']);
 
 /**  Transfert */
-// Route::post('/transferts/envoie', [TransfertEnvoieController::class, 'store']);
 Route::post('/transferts/envoie', [TransfertEnvoieController::class, 'store']);
 Route::post('/transferts/annuler/{id}', [TransfertAnnulerController::class, 'annulerTransfert']);
 Route::post('/transferts/retrait', [TransfertRetraitController::class, 'validerRetrait']);
