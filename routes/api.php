@@ -45,21 +45,12 @@ Route::get('/permissions/{id}', [PermissionController::class, 'show']);
 Route::put('/permissions/{id}', [PermissionController::class, 'update']);
 Route::delete('/permissions/{id}', [PermissionController::class, 'destroy']);
 
-Route::apiResource('roles', RoleController::class);
-Route::post('/assign-role', [RoleController::class, 'assignRole']);
-// Route::post('users/{userId}/assign-role', [RoleController::class, 'assignRole']);// Assigner un rôle à un utilisateur
 
 //Revoke ne marche pas
 // Route::post('users/{userId}/revoke-role', [RoleController::class, 'revokeRole']);// Retirer un rôle d'un utilisateur
 Route::post('users/{userId}/assign-permission', [RolePermissionController::class, 'assignPermission']); // Assigner une permission à un utilisateur
 Route::post('users/{userId}/revoke-permission', [RolePermissionController::class, 'revokePermission']); // Retirer une permission d'un utilisateur
 
-Route::post('/roles/find-by-name', [RoleController::class, 'findRoleByName']);
-Route::get('roles/{id}/check-users', [RoleController::class, 'checkRoleUsers']);
-Route::get('/roles-permissions-liste', [RolePermissionController::class, 'listRolesPermissions']); // Lister rôles et permissions
-Route::post('roles/{roleId}/assign-permissions', [RolePermissionController::class, 'assignPermissionsToRole']); // Assigner une ou plusieurs permissions à un rôle
-Route::post('roles/{roleId}/revoke-permission', [RolePermissionController::class, 'revokePermissionFromRole']); // Retirer une permission d'un rôle
-Route::get('/role/{roleId}/permissions', [RolePermissionController::class, 'getRolePermissions']); // Route pour récupérer les permissions d'un rôle spécifique
 // });
 
 use App\Http\Controllers\TauxEchangeController;
@@ -74,6 +65,10 @@ use App\Http\Controllers\Devises\DeviseCreateController;
 use App\Http\Controllers\Devises\DeviseDeleteController;
 use App\Http\Controllers\Devises\DeviseShowController;
 use App\Http\Controllers\Devises\DeviseUpdateController;
+use App\Http\Controllers\Roles\RoleCreateController;
+use App\Http\Controllers\Roles\RoleDeleteController;
+use App\Http\Controllers\Roles\RoleShowController;
+use App\Http\Controllers\Roles\RoleUpdateController;
 use App\Http\Controllers\Transfert\TransfertAnnulerController;
 use App\Http\Controllers\Transfert\TransfertDeleteController;
 use App\Http\Controllers\Transfert\TransfertEnvoieController;
@@ -107,6 +102,27 @@ Route::get('/devises/all', [DeviseShowController::class, 'index']);
 Route::get('/devises/getById/{id}', [DeviseShowController::class, 'getById']);
 Route::put('/devises/updateById/{id}', [DeviseUpdateController::class, 'updateById']);
 Route::delete('/devises/deleteById/{id}', [DeviseDeleteController::class, 'deleteById']);
+
+/**  ROLE */
+//partie 1 :
+Route::post('/roles/create', [RoleCreateController::class, 'store']);
+Route::get('/roles/all', [RoleShowController::class, 'index']);
+Route::get('/roles/getById/{id}', [RoleShowController::class, 'getById']);
+Route::put('/roles/updateById/{id}', [RoleUpdateController::class, 'updateById']);
+Route::delete('/roles/deleteById/{id}', [RoleDeleteController::class, 'destroy']);
+// Route::apiResource('roles', RoleController::class);
+
+//Partie 2 : 
+Route::post('/roles/find-by-name', [RoleController::class, 'findRoleByName']);
+Route::get('roles/{id}/check-users', [RoleController::class, 'checkRoleUsers']);
+Route::get('/roles-permissions-liste', [RolePermissionController::class, 'listRolesPermissions']); // Lister rôles et permissions
+Route::post('roles/{roleId}/assign-permissions', [RolePermissionController::class, 'assignPermissionsToRole']); // Assigner une ou plusieurs permissions à un rôle
+Route::post('roles/{roleId}/revoke-permission', [RolePermissionController::class, 'revokePermissionFromRole']); // Retirer une permission d'un rôle
+Route::get('/role/{roleId}/permissions', [RolePermissionController::class, 'getRolePermissions']); // Route pour récupérer les permissions d'un rôle spécifique
+
+
+Route::post('/assign-role', [RoleController::class, 'assignRole']);
+// Route::post('users/{userId}/assign-role', [RoleController::class, 'assignRole']);// Assigner un rôle à un utilisateur
 
 
 /**  Transfert */
