@@ -36,9 +36,7 @@ Route::middleware('auth:sanctum')->group(function () {
 // Route::middleware('auth:sanctum')->group(function () {
 
 
-Route::apiResource('/devises', DeviseController::class);
 
-Route::apiResource('agents', AgentController::class);
  
 
 Route::get('/permissions', [PermissionController::class, 'index']);
@@ -72,6 +70,10 @@ Route::put('taux-echanges/{tauxEchange}', [TauxEchangeController::class, 'update
 Route::delete('taux-echanges/{tauxEchange}', [TauxEchangeController::class, 'destroy']);
 
 use App\Http\Controllers\ConversionController;
+use App\Http\Controllers\Devises\DeviseCreateController;
+use App\Http\Controllers\Devises\DeviseDeleteController;
+use App\Http\Controllers\Devises\DeviseShowController;
+use App\Http\Controllers\Devises\DeviseUpdateController;
 use App\Http\Controllers\Transfert\TransfertAnnulerController;
 use App\Http\Controllers\Transfert\TransfertDeleteController;
 use App\Http\Controllers\Transfert\TransfertEnvoieController;
@@ -98,6 +100,14 @@ Route::get('/agences/all', [AgenceShowController::class, 'index']);
 Route::get('/agences/getById/{id}', [AgenceShowController::class, 'show']);
 Route::put('/agences/updateById/{id}', [AgenceUpdateController::class, 'updateById']);
 Route::delete('/agences/deleteById/{id}', [AgenceDeleteController::class, 'deleteById']);
+
+/**  DEVISE */
+Route::post('/devises/create', [DeviseCreateController::class, 'store']);
+Route::get('/devises/all', [DeviseShowController::class, 'index']);
+Route::get('/devises/getById/{id}', [DeviseShowController::class, 'getById']);
+Route::put('/devises/updateById/{id}', [DeviseUpdateController::class, 'updateById']);
+Route::delete('/devises/deleteById/{id}', [DeviseDeleteController::class, 'deleteById']);
+
 
 /**  Transfert */
 Route::post('/transferts/envoie', [TransfertEnvoieController::class, 'store']);
