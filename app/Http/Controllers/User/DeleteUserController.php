@@ -18,7 +18,7 @@ class DeleteUserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy($id)
+    public function delateById($id)
     {
         try {
             if (!is_numeric($id)) {

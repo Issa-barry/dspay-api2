@@ -21,7 +21,7 @@ class updateUserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, $id)
+    public function updateById(Request $request, $id)
     {
         try {
             // Vérification de l'ID utilisateur
