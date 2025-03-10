@@ -97,7 +97,7 @@ Route::post('/transferts/envoie', [TransfertEnvoieController::class, 'store']);
 Route::post('/transferts/annuler/{id}', [TransfertAnnulerController::class, 'annulerTransfert']);
 Route::post('/transferts/retrait', [TransfertRetraitController::class, 'validerRetrait']);
 Route::get('/transferts/all', [TransfertShowController::class, 'index']);
-Route::get('/transferts/byId/{id}', [TransfertShowController::class, 'show']);
+Route::get('/transferts/showById/{id}', [TransfertShowController::class, 'show']);
 Route::get('/transferts/showByCode/{code}', [TransfertShowController::class, 'showByCode']);
 Route::put('/transferts/updateByCode/{code}', [TransfertUpdateController::class, 'updateByCode']);
 Route::put('/transferts/updateById/{id}', [TransfertUpdateController::class, 'updateById']);
