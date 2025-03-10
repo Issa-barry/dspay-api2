@@ -8,6 +8,7 @@ use App\Models\Devise;
 use App\Models\Facture;
 use App\Models\TauxEchange;
 use App\Models\Transfert;
+use App\Traits\JsonResponseTrait;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -15,17 +16,7 @@ use Illuminate\Support\Facades\Validator;
 
 class TransfertEnvoieController extends Controller
 {
-    /**
-     * Fonction pour centraliser les réponses JSON
-     */
-    protected function responseJson($success, $message, $data = null, $statusCode = 200)
-    {
-        return response()->json([
-            'success' => $success,
-            'message' => $message,
-            'data' => $data
-        ], $statusCode);
-    } 
+     use JsonResponseTrait;
 
     /**
      * Créer un transfert de devise.

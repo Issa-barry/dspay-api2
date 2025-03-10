@@ -5,23 +5,14 @@ namespace App\Http\Controllers\Transfert;
 use App\Http\Controllers\Controller;
 use App\Mail\TransfertRetireNotification;
 use App\Models\Transfert;
+use App\Traits\JsonResponseTrait;
 use Illuminate\Http\Request;
 use Mail;
 use Validator;
 
 class TransfertRetraitController extends Controller
 {
-     /**
-     * Fonction pour centraliser les réponses JSON
-     */
-    protected function responseJson($success, $message, $data = null, $statusCode = 200)
-    {
-        return response()->json([
-            'success' => $success,
-            'message' => $message,
-            'data' => $data
-        ], $statusCode);
-    } 
+     use JsonResponseTrait;
 
     /**
      * Valider un retrait de transfert.

@@ -5,43 +5,50 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Models\Role;
 use App\Models\User;
+use App\Traits\JsonResponseTrait; 
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Validator;
 
 class updateUserController extends Controller
 {
-    // Mettre à jour un utilisateur
+    use JsonResponseTrait; 
+
+    /**
+     * Mettre à jour un utilisateur.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(Request $request, $id)
     {
-        
         try {
-            $user = User::find($id);
-    
-            if (!$user) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Utilisateur non trouvé.'
-                ], 404);
+            // Vérification de l'ID utilisateur
+            if (!is_numeric($id)) {
+                return $this->responseJson(false, 'ID utilisateur invalide.', null, 400);
             }
-    
-            //  Validation des données
+
+            // Vérifier si l'utilisateur existe
+            $user = User::find($id);
+            if (!$user) {
+                return $this->responseJson(false, 'Utilisateur non trouvé.', null, 404);
+            }
+
+            // Validation des données
             $validator = Validator::make($request->all(), [
                 'civilite' => 'nullable|in:Mr,Mme,Mlle,Autre',
                 'nom' => 'sometimes|required|string|max:255',
                 'prenom' => 'sometimes|required|string|max:255',
                 'email' => 'sometimes|required|email|unique:users,email,' . $id,
                 'phone' => [
-                    'sometimes',
-                    'required',
-                    'string',
-                    Rule::unique('users', 'phone')->ignore($id), // Ignore le téléphone actuel
+                    'sometimes', 'required', 'string',
+                    Rule::unique('users', 'phone')->ignore($id),
                 ],
                 'date_naissance' => 'nullable|date',
-                 'role' => [
-                    'sometimes',
-                    'required',
-                    Rule::exists('roles', 'name'), // Vérifie si le rôle existe
+                'role' => [
+                    'sometimes', 'required',
+                    Rule::exists('roles', 'name'), // Vérifie que le rôle existe
                 ],
                 'adresse' => 'sometimes|array',
                 'adresse.pays' => 'string|max:255',
@@ -51,59 +58,41 @@ class updateUserController extends Controller
                 'adresse.quartier' => 'string|max:255',
                 'adresse.code_postal' => 'string|max:20',
             ]);
-    
+
             if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Erreur de validation des données.',
-                    'errors' => $validator->errors()
-                ], 422);
+                return $this->responseJson(false, 'Erreur de validation.', $validator->errors(), 422);
             }
-    
+
             $validated = $validator->validated();
-    
+
             // Mise à jour de l'adresse si fournie
             if (isset($validated['adresse']) && $user->adresse) {
                 $user->adresse->update($validated['adresse']);
             }
-    
-            // Mise à jour du rôle et du `role_id`
+
+            // Mise à jour du rôle
             if (isset($validated['role'])) {
                 $newRole = Role::where('name', $validated['role'])->first();
-    
                 if (!$newRole) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Le rôle fourni n\'existe pas.'
-                    ], 400);
+                    return $this->responseJson(false, 'Le rôle spécifié n\'existe pas.', null, 400);
                 }
-    
-                //  Mise à jour de `role_id` dans `users`
+
                 $user->role_id = $newRole->id;
                 $user->save();
-    
-                //  Mise à jour des permissions (Spatie)
                 $user->syncRoles([$validated['role']]);
             }
-    
-            //  Mise à jour des autres champs
+
+            // Mise à jour des autres champs
             $user->update(collect($validated)->except(['adresse', 'role'])->toArray());
-    
-            return response()->json([
-                'success' => true,
-                'message' => 'Utilisateur mis à jour avec succès.',
-                'data' => array_merge($user->load(['adresse', 'roles'])->toArray(), [
-                    'role' => $user->roles->pluck('name')->first(), //  Retourne le rôle proprement
+
+            return $this->responseJson(true, 'Utilisateur mis à jour avec succès.', 
+                array_merge($user->load(['adresse', 'roles'])->toArray(), [
+                    'role' => $user->roles->pluck('name')->first(), //Récupération du rôle proprement
                     'role_id' => $user->role_id // Retourne aussi le `role_id`
                 ])
-            ]);
+            );
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Une erreur interne est survenue lors de la mise à jour de l\'utilisateur.',
-                'error' => $e->getMessage()
-            ], 500);
+            return $this->responseJson(false, 'Une erreur est survenue lors de la mise à jour.', $e->getMessage(), 500);
         }
     }
-    
 }

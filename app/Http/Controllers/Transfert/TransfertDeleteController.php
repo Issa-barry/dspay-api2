@@ -4,22 +4,13 @@ namespace App\Http\Controllers\Transfert;
 
 use App\Http\Controllers\Controller;
 use App\Models\Transfert;
+use App\Traits\JsonResponseTrait;
 use Exception;
 use Illuminate\Http\Request;
 
 class TransfertDeleteController extends Controller
 {
-    /**
-     * Fonction pour centraliser les réponses JSON
-     */
-    protected function responseJson($success, $message, $data = null, $statusCode = 200)
-    {
-        return response()->json([
-            'success' => $success,
-            'message' => $message,
-            'data' => $data
-        ], $statusCode);
-    }
+    use JsonResponseTrait;
 
     /**
      * Supprimer un transfert par son ID.

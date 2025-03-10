@@ -5,23 +5,14 @@ namespace App\Http\Controllers\Transfert;
 use App\Http\Controllers\Controller;
 use App\Models\Transfert;
 use App\Notifications\TransfertAnnulationNotification;
+use App\Traits\JsonResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
 use Exception;
 
 class TransfertAnnulerController extends Controller
 {
-    /**
-     * Fonction pour centraliser les réponses JSON
-     */
-    protected function responseJson($success, $message, $data = null, $statusCode = 200)
-    {
-        return response()->json([
-            'success' => $success,
-            'message' => $message,
-            'data' => $data
-        ], $statusCode);
-    }
+    use JsonResponseTrait;
 
     /**
      * Annuler un transfert existant avec gestion des erreurs.
