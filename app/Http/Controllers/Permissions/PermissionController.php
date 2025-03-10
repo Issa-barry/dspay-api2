@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Permissions;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 
@@ -13,7 +14,7 @@ class PermissionController extends Controller
     protected function responseJson($success, $message, $data = null, $statusCode = 200)
     {
         return response()->json([
-            'success' => $success,
+            'success' => $success, 
             'message' => $message,
             'data' => $data
         ], $statusCode);
