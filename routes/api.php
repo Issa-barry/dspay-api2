@@ -75,9 +75,9 @@ Route::delete('conversions/{conversion}', [ConversionController::class, 'destroy
  * USER 
  * 
  * ********************************************************/
+Route::post('/users/create', [createUserController::class, 'store']);
 Route::get('/users/all', [ShowUserController::class, 'index']);
 Route::get('/users/getById/{id}', [ShowUserController::class, 'getById']);
-Route::post('/users', [createUserController::class, 'store']);
 Route::put('/users/updateById/{id}', [updateUserController::class, 'updateById']);
 Route::delete('/users/delateById/{id}', [DeleteUserController::class, 'delateById']);
 

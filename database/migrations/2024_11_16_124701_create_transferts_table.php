@@ -13,34 +13,31 @@ return new class extends Migration
     {
         Schema::create('transferts', function (Blueprint $table) {
             $table->id();
+            // Informations de transfert
+            $table->decimal('montant_expediteur', 15, 2);
+            $table->decimal('montant_receveur', 15, 2);
+            $table->decimal('total', 15, 2);
+            $table->integer('frais')->default(0);
+            $table->string('code', 255)->unique();  // Code unique pour chaque transfert
+            $table->string('statut')->default('en_cours'); // Défaut: en_cours
+            $table->string('quartier')->nullable();
+
+            // Informations sur le receveur
+            $table->string('receveur_nom_complet');
+            $table->string('receveur_phone');
+
+            // Informations sur l'expéditeur
+            $table->string('expediteur_nom_complet');
+            $table->string('expediteur_phone');
+            $table->string('expediteur_email')->nullable();
+
             // Devises liées
             $table->foreignId('devise_source_id')->constrained('devises')->onDelete('cascade');
             $table->foreignId('devise_cible_id')->constrained('devises')->onDelete('cascade');
-            
+
+
             // Lien vers le taux de change utilisé
             $table->foreignId('taux_echange_id')->nullable()->constrained('taux_echanges')->onDelete('set null');
-            
-            // Informations de transfert
-            $table->decimal('montant_expediteur', 15, 2);   
-            $table->decimal('montant_receveur', 15, 2);  
-            $table->decimal('total', 15, 2); 
-            $table->integer('frais')->default(0); 
-
-            // Informations sur l'expéditeur
-            $table->string('expediteur_nom');
-            $table->string('expediteur_prenom');
-            $table->string('expediteur_phone');
-            $table->string('expediteur_email')->nullable();
-            
-            // Informations sur le receveur
-            $table->string('receveur_nom');
-            $table->string('receveur_prenom');
-            $table->string('receveur_phone');
-            
-            // Informations supplémentaires
-            $table->string('quartier')->nullable();
-            $table->string('code', 255)->unique();  // Code unique pour chaque transfert
-            $table->string('statut')->default('en_cours'); // Défaut: en_cours
 
             $table->timestamps();
         });

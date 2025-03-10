@@ -15,9 +15,9 @@ class DeviseSeeder extends Seeder
     public function run()
     { 
         $devises = [
-            ['nom' => 'Dollar US', 'tag' => '$'],
             ['nom' => 'Euro', 'tag' => '€'],
             ['nom' => 'Franc-Guinéen', 'tag' => 'GNF'],
+            ['nom' => 'Dollar US', 'tag' => '$'],
         ];
  
         foreach ($devises as $devise) {

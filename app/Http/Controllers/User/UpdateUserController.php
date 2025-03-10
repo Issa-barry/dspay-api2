@@ -38,8 +38,7 @@ class updateUserController extends Controller
             // Validation des données
             $validator = Validator::make($request->all(), [
                 'civilite' => 'nullable|in:Mr,Mme,Mlle,Autre',
-                'nom' => 'sometimes|required|string|max:255',
-                'prenom' => 'sometimes|required|string|max:255',
+                'nom_complet' => 'sometimes|required|string|max:255',
                 'email' => 'sometimes|required|email|unique:users,email,' . $id,
                 'phone' => [
                     'sometimes', 'required', 'string',

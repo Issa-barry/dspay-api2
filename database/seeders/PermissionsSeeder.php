@@ -16,7 +16,7 @@ class PermissionsSeeder extends Seeder
     public function run()
     {
         // Exemple de modèles pour lesquels créer des permissions
-        $models = ['Transfert', 'Contact', 'Agence','Agents','Factures', 'Taux', 'Devises', 'Users', 'Roles', 'Permissions', 
+        $models = ['Transfert', 'Contact', 'Agence','Agents','Factures', 'Taux', 'Frais', 'Devises', 'Users', 'Roles', 'Permissions', 
                    'Dashboard-RH', 'Dashboard-CA']; 
 
         // Liste des actions possibles

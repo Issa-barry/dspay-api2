@@ -7,9 +7,12 @@ use App\Models\Adresse;
 use App\Models\Role;
 use App\Models\User;
 use App\Traits\JsonResponseTrait; 
+use Illuminate\Database\QueryException;
+use Illuminate\Validation\ValidationException;
 use Exception;
 use Hash;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class CreateUserController extends Controller
 {
@@ -18,10 +21,10 @@ class CreateUserController extends Controller
     public function store(Request $request)
     {
         try {
+            // Validation des données
             $validated = $request->validate([  
                 'civilite' => 'in:Mr,Mme,Mlle,Autre',
-                'nom' => 'required|string|max:255',
-                'prenom' => 'required|string|max:255',
+                'nom_complet' => 'required|string|max:255',
                 'email' => 'required|email|unique:users,email',
                 'phone' => 'required|string|unique:users,phone',
                 'date_naissance' => 'nullable|date',
@@ -36,30 +39,51 @@ class CreateUserController extends Controller
                 'adresse.code_postal' => 'required|string|max:20',
             ]);
 
-      
-            $adresse = Adresse::create($validated['adresse']);
+            try {
+                // Vérifier si le rôle existe
+                $role = Role::where('name', $validated['role'])->first();
+                if (!$role) {
+                    return $this->responseJson(false, 'Rôle introuvable.', null, 404);
+                }
 
-            $role = Role::where('name', $validated['role'])->firstOrFail();
+                // Création de l'adresse
+                $adresse = Adresse::create($validated['adresse']);
 
-            $user = User::create([
-                'civilite' => $validated['civilite'],
-                'nom' => $validated['nom'],
-                'prenom' => $validated['prenom'],
-                'email' => $validated['email'],
-                'phone' => $validated['phone'],
-                'date_naissance' => $validated['date_naissance'],
-                'password' => Hash::make($validated['password']),
-                'adresse_id' => $adresse->id,
-                'role_id' => $role->id,
-            ]);
+                // Création de l'utilisateur
+                $user = User::create([
+                    'civilite' => $validated['civilite'],
+                    'nom_complet' => $validated['nom_complet'], 
+                    'email' => $validated['email'],
+                    'phone' => $validated['phone'],
+                    'date_naissance' => $validated['date_naissance'],
+                    'password' => Hash::make($validated['password']),
+                    'adresse_id' => $adresse->id,
+                    'role_id' => $role->id,
+                ]);
 
-            $user->assignRole($validated['role']);
-            $user->sendEmailVerificationNotification();
+                // Attribution du rôle
+                $user->assignRole($validated['role']);
 
-            return $this->responseJson(true, 'Utilisateur créé avec succès. Veuillez vérifier votre email.', $user->load('adresse'), 201);
+                try {
+                    // Envoi de l'email de vérification
+                    $user->sendEmailVerificationNotification();
+                } catch (Exception $e) {
+                    Log::error('Erreur lors de l\'envoi de l\'email de vérification : ' . $e->getMessage());
+                    return $this->responseJson(true, 'Utilisateur créé, mais l\'email de vérification n\'a pas pu être envoyé.', $user->load('adresse'), 201);
+                }
+
+                return $this->responseJson(true, 'Utilisateur créé avec succès. Veuillez vérifier votre email.', $user->load('adresse'), 201);
+
+            } catch (QueryException $e) {
+                Log::error('Erreur SQL lors de la création de l\'utilisateur : ' . $e->getMessage());
+                return $this->responseJson(false, 'Erreur de base de données lors de la création de l\'utilisateur.', null, 500);
+            }
+
+        } catch (ValidationException $e) {
+            return $this->responseJson(false, 'Erreur de validation.', $e->errors(), 422);
         } catch (Exception $e) {
-            return $this->responseJson(false, 'Erreur lors de la création de l\'utilisateur.', $e->getMessage(), 500);
+            Log::error('Erreur générale lors de la création de l\'utilisateur : ' . $e->getMessage());
+            return $this->responseJson(false, 'Une erreur inattendue est survenue.', $e->getMessage(), 500);
         }
     }
 }
- 

@@ -36,8 +36,7 @@ class AdminUserSeeder extends Seeder
             // Créer l'utilisateur admin
             $admin = User::create([
                 'civilite' => 'Mr',
-                'nom' => 'Nom_Admin',
-                'prenom' => 'Prenom_Admin',
+                'nom_complet' => 'Nom_Admin',
                 'email' => 'wotapif@gmail.com',
                 'phone' => '0123456789',
                 'date_naissance' => '1985-01-01',

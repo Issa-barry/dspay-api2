@@ -24,7 +24,7 @@ class TransfertEnvoieController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response 
      */
-    public function store(Request $request)
+    public function store(Request $request) 
     {
         //Validation des entrées
         $validated = Validator::make($request->all(), [
@@ -33,11 +33,9 @@ class TransfertEnvoieController extends Controller
             'montant_expediteur' => 'required|numeric|min:1',
             'frais' => 'required|integer|min:0',
             'quartier' => 'nullable|string',
-            'receveur_nom' => 'required|string|max:255',
-            'receveur_prenom' => 'required|string|max:255',
+            'receveur_nom_complet' => 'required|string|max:255', 
             'receveur_phone' => 'required|string|max:20',
-            'expediteur_nom' => 'required|string|max:255',
-            'expediteur_prenom' => 'required|string|max:255',
+            'expediteur_nom_complet' => 'required|string|max:255', 
             'expediteur_phone' => 'required|string|max:20',
             'expediteur_email' => 'required|email|max:255',
         ]);
@@ -74,11 +72,9 @@ class TransfertEnvoieController extends Controller
                 'frais' => $request->frais,
                 'total' => $total,
                 'quartier' => $request->quartier,
-                'receveur_nom' => $request->receveur_nom,
-                'receveur_prenom' => $request->receveur_prenom,
+                'receveur_nom_complet' => $request->receveur_nom_complet,
                 'receveur_phone' => $request->receveur_phone,
-                'expediteur_nom' => $request->expediteur_nom,
-                'expediteur_prenom' => $request->expediteur_prenom,
+                'expediteur_nom_complet' => $request->expediteur_nom_complet, 
                 'expediteur_phone' => $request->expediteur_phone,
                 'expediteur_email' => $request->expediteur_email,
                 'taux_echange_id' => $tauxEchange->id,
