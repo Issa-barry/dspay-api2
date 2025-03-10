@@ -26,7 +26,8 @@ class Transfert extends Model
         'expediteur_email',
         'quartier',
         'code',
-        'frais'
+        'frais',
+        'total',
         'statut', 
     ]; 
 
