@@ -6,12 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Models\Adresse;
 use App\Models\Role;
 use App\Models\User;
+use App\Traits\JsonResponseTrait; 
 use Exception;
 use Hash;
 use Illuminate\Http\Request;
 
-class createUserController extends Controller
+class CreateUserController extends Controller
 {
+    use JsonResponseTrait; 
+
     public function store(Request $request)
     {
         try {
@@ -33,7 +36,9 @@ class createUserController extends Controller
                 'adresse.code_postal' => 'required|string|max:20',
             ]);
 
+      
             $adresse = Adresse::create($validated['adresse']);
+
             $role = Role::where('name', $validated['role'])->firstOrFail();
 
             $user = User::create([
@@ -51,17 +56,10 @@ class createUserController extends Controller
             $user->assignRole($validated['role']);
             $user->sendEmailVerificationNotification();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Utilisateur créé avec succès. Veuillez vérifier votre email.',
-                'data' => $user->load('adresse')
-            ], 201);
+            return $this->responseJson(true, 'Utilisateur créé avec succès. Veuillez vérifier votre email.', $user->load('adresse'), 201);
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Erreur lors de la création de l\'utilisateur.',
-                'error' => $e->getMessage()
-            ], 500);
+            return $this->responseJson(false, 'Erreur lors de la création de l\'utilisateur.', $e->getMessage(), 500);
         }
     }
 }
+ 

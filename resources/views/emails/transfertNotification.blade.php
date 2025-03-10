@@ -53,7 +53,7 @@
     <table>
         <tr>
             <th>Montant en Euro :</th>
-            <td>{{ $transfert->montant }} {{ $transfert->deviseSource->tag }}</td>
+            <td>{{ $transfert->montant_expediteur }} {{ $transfert->deviseSource->tag }}</td>
         </tr>
         <tr>
             <th>Bénéficiaire :</th>
@@ -61,7 +61,7 @@
         </tr>
         <tr>
             <th>Montant à récupérer :</th>
-            <td>{{ $transfert->montant_converti }} {{ $transfert->deviseCible->tag }}</td>
+            <td>{{ $transfert->montant_receveur }} {{ $transfert->deviseCible->tag }}</td>
         </tr>
         <tr>
             <th>Agence :</th>
