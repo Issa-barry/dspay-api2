@@ -21,8 +21,10 @@ return new class extends Migration
             $table->foreignId('taux_echange_id')->nullable()->constrained('taux_echanges')->onDelete('set null');
             
             // Informations de transfert
-            $table->decimal('montant', 15, 2);  // Montant à transférer
-            $table->decimal('montant_converti', 15, 2); // Montant après conversion
+            $table->decimal('montant_expediteur', 15, 2);   
+            $table->decimal('montant_receveur', 15, 2);  
+            $table->decimal('total', 15, 2); 
+            $table->integer('frais')->default(0); 
 
             // Informations sur l'expéditeur
             $table->string('expediteur_nom');
