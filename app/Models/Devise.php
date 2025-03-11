@@ -9,10 +9,14 @@ class Devise extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nom', 'tag'];
+    protected $fillable = [
+        'nom', 
+        'tag'
+    ];
 
      public function setNomAttribute($value)
      {
          $this->attributes['nom'] = ucfirst(strtolower($value));
      }
 }
+ 

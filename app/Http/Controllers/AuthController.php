@@ -11,6 +11,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\Auth;
+use Laravel\Sanctum\PersonalAccessToken;
 use Spatie\Permission\Models\Role;
 
 class AuthController extends Controller
@@ -20,7 +21,11 @@ class AuthController extends Controller
     {
         // Validation des données
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
+            'civilite' => 'required|in:Mr,Mme,Mlle,Autre',  // Validation de la civilité
+            'nom' => 'required|string|max:255',              // Validation du nom
+            'prenom' => 'required|string|max:255',           // Validation du prénom
+            'phone' => 'required|string|unique:users,phone', // Téléphone unique
+            'date_naissance' => 'nullable|date',             // Date de naissance (facultatif)
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
             'role' => 'required|string|exists:roles,name',  
@@ -34,8 +39,12 @@ class AuthController extends Controller
         try {
             // Création de l'utilisateur
             $user = User::create([
-                'name' => $request->name,
+                'civilite' => $request->civilite,
+                'nom' => $request->nom,
+                'prenom' => $request->prenom,
                 'email' => $request->email,
+                'phone' => $request->phone,
+                'date_naissance' => $request->date_naissance,
                 'password' => Hash::make($request->password),
             ]);
 
@@ -89,19 +98,18 @@ class AuthController extends Controller
             ], 400);
         }
 
-        $token = $user->createToken('Personal Access Token')->plainTextToken;
+        $token = $user->createToken('access_token')->plainTextToken;
 
         return response()->json([
             'message' => 'Connexion réussie.',
             'user' => $user,
-            'token' => $token,
+            'access_token' => $token,
         ], 200);
     }
 
     public function logout(Request $request)
         {
             $request->user()->tokens()->delete();
-
             return response()->json([
                 'message' => 'Déconnecté de tous les appareils.',
             ], 200);
@@ -214,4 +222,27 @@ class AuthController extends Controller
             'message' => 'Verification email resent successfully.'
         ], 200);
     }
+
+    // Vérification du token dans l'en-tête
+    public function checkTokenInHeader(Request $request)
+    {
+        $token = $request->header('Authorization');
+
+        if (!$token) {
+            return response()->json(['error' => 'Token manquant dans l\'en-tête.'], 422);
+        }
+
+        if (str_starts_with($token, 'Bearer ')) {
+            $token = substr($token, 7);
+        }
+
+        $tokenExists = PersonalAccessToken::where('token', hash('sha256', $token))->exists();
+
+        if (!$tokenExists) {
+            return response()->json(['message' => 'Token invalide ou inexistant.'], 404);
+        }
+
+        return response()->json(['message' => 'Token valide.'], 200);
+    }
+
 }
