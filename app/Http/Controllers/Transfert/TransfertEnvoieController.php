@@ -13,23 +13,22 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
- 
+
 class TransfertEnvoieController extends Controller
 {
      use JsonResponseTrait;
 
     /**
-     * Créer un transfert de devise.
+     * Créer un transfert de devise en utilisant un taux déjà existant.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response 
      */
     public function store(Request $request) 
     {
-        //Validation des entrées
+        // Validation des entrées
         $validated = Validator::make($request->all(), [
-            'devise_source_id' => 'required|exists:devises,id',
-            'devise_cible_id' => 'required|exists:devises,id',
+            'taux_echange_id' => 'required|exists:taux_echanges,id',
             'montant_expediteur' => 'required|numeric|min:1',
             'frais' => 'required|integer|min:0',
             'quartier' => 'nullable|string',
@@ -45,28 +44,27 @@ class TransfertEnvoieController extends Controller
         }
 
         try {
-            //Récupération des devises et vérification
-            $deviseSource = $this->getDevise($request->devise_source_id);
-            $deviseCible = $this->getDevise($request->devise_cible_id);
+            // Récupération du taux de change et des devises associées
+            $tauxEchange = TauxEchange::find($request->taux_echange_id);
+            if (!$tauxEchange) {
+                return $this->responseJson(false, 'Taux de change introuvable.', null, 404);
+            }
+
+            $deviseSource = Devise::find($tauxEchange->devise_source_id);
+            $deviseCible = Devise::find($tauxEchange->devise_cible_id);
 
             if (!$deviseSource || !$deviseCible) {
-                return $this->responseJson(false, 'Devise source ou cible introuvable.', null, 404);
+                return $this->responseJson(false, 'Les devises associées à ce taux sont introuvables.', null, 404);
             }
 
-            //Récupération du taux de change
-            $tauxEchange = $this->getTauxEchange($request->devise_source_id, $request->devise_cible_id);
-            if (!$tauxEchange) {
-                return $this->responseJson(false, 'Taux de change invalide.', null, 400);
-            }
-
-            //Calcul du montant converti et total
+            // Calcul du montant converti et total
             $montantConverti = $request->montant_expediteur * $tauxEchange->taux;
             $total = $request->montant_expediteur + $request->frais;
 
-            //Création du transfert
+            // Création du transfert
             $transfert = Transfert::create([
-                'devise_source_id' => $request->devise_source_id,
-                'devise_cible_id' => $request->devise_cible_id,
+                'devise_source_id' => $deviseSource->id,
+                'devise_cible_id' => $deviseCible->id,
                 'montant_expediteur' => $request->montant_expediteur,
                 'montant_receveur' => $montantConverti,
                 'frais' => $request->frais,
@@ -82,10 +80,10 @@ class TransfertEnvoieController extends Controller
                 'code' => Transfert::generateUniqueCode(),
             ]);
 
-            //Création de la facture
+            // Création de la facture
             $this->createFacture($transfert);
 
-            //Envoi de l'email de confirmation (seulement si l'email est défini)
+            // Envoi de l'email de confirmation (seulement si l'email est défini)
             if (!empty($transfert->expediteur_email)) {
                 Mail::to($transfert->expediteur_email)->send(new TransfertNotification($transfert));
             }
@@ -96,24 +94,6 @@ class TransfertEnvoieController extends Controller
                 'message' => $e->getMessage()
             ], 500);
         }
-    }
-
-    /**
-     * Récupérer une devise par son ID.
-     */
-    private function getDevise($id)
-    {
-        return Devise::find($id);
-    }
-
-    /**
-     * Récupérer le taux d'échange entre deux devises.
-     */
-    private function getTauxEchange($deviseSourceId, $deviseCibleId)
-    {
-        return TauxEchange::where('devise_source_id', $deviseSourceId)
-            ->where('devise_cible_id', $deviseCibleId)
-            ->first();
     }
 
     /**
