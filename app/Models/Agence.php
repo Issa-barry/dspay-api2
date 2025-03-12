@@ -19,6 +19,11 @@ class Agence extends Model
         'adresse_id',
     ];
 
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
+
     public function adresse()
     {
         return $this->belongsTo(Adresse::class);
