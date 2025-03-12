@@ -125,7 +125,7 @@ Route::get('/taux/all', [TauxShowController::class, 'index']);
 Route::get('/taux/getById/{id}', [TauxShowController::class, 'getById']);
 Route::put('/taux/updateById/{id}', [TauxUpdateController::class, 'updateById']);
 Route::delete('/taux/deleteById/{id}', [TauxDeleteController::class, 'deleteById']);
-Route::post('/taux/create', [TauxCreateController::class, 'store']);
+Route::post('/taux/createById', [TauxCreateController::class, 'createById']);
 Route::post('/taux/createByName', [TauxCreateController::class, 'storeByName']);
 
 
