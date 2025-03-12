@@ -47,7 +47,7 @@ use App\Http\Controllers\Taux\TauxCreateController;
 use App\Http\Controllers\Taux\TauxDeleteController;
 use App\Http\Controllers\Taux\TauxShowController;
 use App\Http\Controllers\Taux\TauxUpdateController;
-
+use App\Http\Controllers\User\UserAffecterAgenceController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -79,6 +79,7 @@ Route::delete('conversions/{conversion}', [ConversionController::class, 'destroy
  * USER  
  * 
  * ********************************************************/
+Route::post('/users/affecter-agence/{id}', [UserAffecterAgenceController::class, 'affecterAgence']);
 Route::post('/users/create', [CreateUserController::class, 'store']);
 Route::get('/users/all', [ShowUserController::class, 'index']);
 Route::get('/users/getById/{id}', [ShowUserController::class, 'getById']);
@@ -96,6 +97,7 @@ Route::get('/agences/all', [AgenceShowController::class, 'index']);
 Route::get('/agences/getById/{id}', [AgenceShowController::class, 'show']);
 Route::put('/agences/updateById/{id}', [AgenceUpdateController::class, 'updateById']);
 Route::delete('/agences/deleteById/{id}', [AgenceDeleteController::class, 'deleteById']);
+
 
 
 /**********************************************************
