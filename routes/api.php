@@ -13,11 +13,37 @@ use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\DeviseController;
 use App\Http\Controllers\AgenceController;
 use App\Http\Controllers\AgentController;
-use App\Http\Controllers\User\createUserController;
 use App\Http\Controllers\User\DeleteUserController;
 use App\Http\Controllers\User\ShowUserController;
 use App\Http\Controllers\User\updateUserController;
-use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\User\CreateUserController;
+
+use App\Http\Controllers\ConversionController;
+use App\Http\Controllers\Devises\DeviseCreateController;
+use App\Http\Controllers\Devises\DeviseDeleteController;
+use App\Http\Controllers\Devises\DeviseShowController;
+use App\Http\Controllers\Devises\DeviseUpdateController;
+use App\Http\Controllers\Permissions\PermissionController;
+use App\Http\Controllers\Roles\RoleAssigneController;
+use App\Http\Controllers\Roles\RoleCreateController;
+use App\Http\Controllers\Roles\RoleDeleteController;
+use App\Http\Controllers\Roles\RoleListeUsersDuRoleController;
+use App\Http\Controllers\Roles\RoleShowController;
+use App\Http\Controllers\Roles\RoleUpdateController;
+use App\Http\Controllers\Taux\TauxCreateController;
+use App\Http\Controllers\Taux\TauxDeleteController;
+use App\Http\Controllers\Taux\TauxShowController;
+use App\Http\Controllers\Taux\TauxUpdateController;
+use App\Http\Controllers\Transfert\TransfertAnnulerController;
+use App\Http\Controllers\Transfert\TransfertDeleteController;
+use App\Http\Controllers\Transfert\TransfertEnvoieController;
+use App\Http\Controllers\Transfert\TransfertRetraitController;
+use App\Http\Controllers\Transfert\TransfertShowController;
+use App\Http\Controllers\Transfert\TransfertUpdateController;
+use App\Http\Controllers\Roles\RolePermissions\RolePermissionsAssignPermissionController;
+use App\Http\Controllers\Roles\RolePermissions\RolePermissionsRevokePermissionController;
+use App\Http\Controllers\Roles\RolePermissions\RolePermissionsShowController;
+
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -36,32 +62,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
 // });
 
-use App\Http\Controllers\TauxEchangeController;
-use App\Http\Controllers\ConversionController;
-use App\Http\Controllers\Devises\DeviseCreateController;
-use App\Http\Controllers\Devises\DeviseDeleteController;
-use App\Http\Controllers\Devises\DeviseShowController;
-use App\Http\Controllers\Devises\DeviseUpdateController;
-use App\Http\Controllers\Permissions\PermissionController;
-use App\Http\Controllers\Roles\RoleAssigneController;
-use App\Http\Controllers\Roles\RoleCreateController;
-use App\Http\Controllers\Roles\RoleDeleteController;
-use App\Http\Controllers\Roles\RoleListeUsersDuRoleController;
-use App\Http\Controllers\Roles\RolePermissions\RolePermissionsAssignPermissionController;
-use App\Http\Controllers\Roles\RolePermissions\RolePermissionsRevokePermissionController;
-use App\Http\Controllers\Roles\RolePermissions\RolePermissionsShowController;
-use App\Http\Controllers\Roles\RoleShowController;
-use App\Http\Controllers\Roles\RoleUpdateController;
-use App\Http\Controllers\Taux\TauxCreateController;
-use App\Http\Controllers\Taux\TauxDeleteController;
-use App\Http\Controllers\Taux\TauxShowController;
-use App\Http\Controllers\Taux\TauxUpdateController;
-use App\Http\Controllers\Transfert\TransfertAnnulerController;
-use App\Http\Controllers\Transfert\TransfertDeleteController;
-use App\Http\Controllers\Transfert\TransfertEnvoieController;
-use App\Http\Controllers\Transfert\TransfertRetraitController;
-use App\Http\Controllers\Transfert\TransfertShowController;
-use App\Http\Controllers\Transfert\TransfertUpdateController;
 
 Route::get('conversions', [ConversionController::class, 'index']);
 Route::post('conversions', [ConversionController::class, 'store']);
@@ -72,10 +72,10 @@ Route::delete('conversions/{conversion}', [ConversionController::class, 'destroy
 
 /**********************************************************
  *   
- * USER 
+ * USER  
  * 
  * ********************************************************/
-Route::post('/users/create', [createUserController::class, 'store']);
+Route::post('/users/create', [CreateUserController::class, 'store']);
 Route::get('/users/all', [ShowUserController::class, 'index']);
 Route::get('/users/getById/{id}', [ShowUserController::class, 'getById']);
 Route::put('/users/updateById/{id}', [updateUserController::class, 'updateById']);
