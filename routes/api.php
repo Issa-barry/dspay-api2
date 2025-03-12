@@ -24,7 +24,9 @@ use App\Http\Controllers\Devises\DeviseDeleteController;
 use App\Http\Controllers\Devises\DeviseShowController;
 use App\Http\Controllers\Devises\DeviseUpdateController;
 use App\Http\Controllers\Frais\FraisCreateController;
+use App\Http\Controllers\Frais\FraisDeleteController;
 use App\Http\Controllers\Frais\FraisShowController;
+use App\Http\Controllers\Frais\FraisUpdateController;
 use App\Http\Controllers\Permissions\PermissionController;
 use App\Http\Controllers\Roles\RoleAssigneController;
 use App\Http\Controllers\Roles\RoleCreateController;
@@ -184,5 +186,5 @@ Route::delete('/transferts/deleteByCode/{id}', [TransfertDeleteController::class
 Route::get('/frais/all', [FraisShowController::class, 'index']);
 Route::get('/frais/getById/{id}', [FraisShowController::class, 'show']);
 Route::post('/frais/create', [FraisCreateController::class, 'create']);
-Route::put('/frais/{id}', [PermissionController::class, 'update']);
-Route::delete('/frais/{id}', [PermissionController::class, 'destroy']);
+Route::put('/frais/updateById/{id}', [FraisUpdateController::class, 'updateById']);
+Route::delete('/frais/deleteById/{id}', [FraisDeleteController::class, 'deleteById']);
