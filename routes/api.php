@@ -30,10 +30,6 @@ use App\Http\Controllers\Roles\RoleDeleteController;
 use App\Http\Controllers\Roles\RoleListeUsersDuRoleController;
 use App\Http\Controllers\Roles\RoleShowController;
 use App\Http\Controllers\Roles\RoleUpdateController;
-use App\Http\Controllers\Taux\TauxCreateController;
-use App\Http\Controllers\Taux\TauxDeleteController;
-use App\Http\Controllers\Taux\TauxShowController;
-use App\Http\Controllers\Taux\TauxUpdateController;
 use App\Http\Controllers\Transfert\TransfertAnnulerController;
 use App\Http\Controllers\Transfert\TransfertDeleteController;
 use App\Http\Controllers\Transfert\TransfertEnvoieController;
@@ -43,6 +39,10 @@ use App\Http\Controllers\Transfert\TransfertUpdateController;
 use App\Http\Controllers\Roles\RolePermissions\RolePermissionsAssignPermissionController;
 use App\Http\Controllers\Roles\RolePermissions\RolePermissionsRevokePermissionController;
 use App\Http\Controllers\Roles\RolePermissions\RolePermissionsShowController;
+use App\Http\Controllers\Taux\TauxCreateController;
+use App\Http\Controllers\Taux\TauxDeleteController;
+use App\Http\Controllers\Taux\TauxShowController;
+use App\Http\Controllers\Taux\TauxUpdateController;
 
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -123,9 +123,11 @@ Route::delete('/permissions/{id}', [PermissionController::class, 'destroy']);
  * ********************************************************/
 Route::get('/taux/all', [TauxShowController::class, 'index']);
 Route::get('/taux/getById/{id}', [TauxShowController::class, 'getById']);
-Route::post('/taux/create', [TauxCreateController::class, 'store']);
 Route::put('/taux/updateById/{id}', [TauxUpdateController::class, 'updateById']);
 Route::delete('/taux/deleteById/{id}', [TauxDeleteController::class, 'deleteById']);
+Route::post('/taux/create', [TauxCreateController::class, 'store']);
+Route::post('/taux/createByName', [TauxCreateController::class, 'storeByName']);
+
 
 /**********************************************************
  *   
