@@ -4,7 +4,6 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\Agence;
 use App\Traits\JsonResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -32,11 +31,11 @@ class UserAffecterAgenceController extends Controller
             ]);
 
             // Recherche de l'utilisateur
-            $user = User::findOrFail($userId);
+            $user = User::where('id', $userId)->firstOrFail();
 
             // Vérifier si l'utilisateur est déjà affecté à cette agence
-            if ($user->agence_id == $validated['agence_id']) {
-                return $this->responseJson(false, 'L\'utilisateur est déjà affecté à cette agence.', null, 400);
+            if ($user->agence_id === $validated['agence_id']) {
+                return $this->responseJson(false, 'Utilisateur déjà affecté à cette agence.', null, 400);
             }
 
             // Mise à jour de l'affectation
@@ -44,13 +43,14 @@ class UserAffecterAgenceController extends Controller
 
             return $this->responseJson(true, 'Utilisateur affecté à l\'agence avec succès.', $user->load('agence'), 200);
         } catch (ValidationException $e) {
+            Log::warning('Erreur de validation lors de l\'affectation : ' . json_encode($e->errors()));
             return $this->responseJson(false, 'Erreur de validation.', $e->errors(), 422);
         } catch (QueryException $e) {
-            Log::error('Erreur SQL lors de l\'affectation de l\'utilisateur à une agence : ' . $e->getMessage());
+            Log::error('Erreur SQL lors de l\'affectation : ' . $e->getMessage());
             return $this->responseJson(false, 'Erreur de base de données.', null, 500);
         } catch (Exception $e) {
-            Log::error('Erreur générale lors de l\'affectation : ' . $e->getMessage());
-            return $this->responseJson(false, 'Une erreur inattendue est survenue.', null, 500);
+            Log::error('Erreur inattendue lors de l\'affectation : ' . $e->getMessage());
+            return $this->responseJson(false, 'Une erreur interne est survenue.', null, 500);
         }
     }
 }
