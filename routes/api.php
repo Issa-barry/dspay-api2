@@ -23,6 +23,10 @@ use App\Http\Controllers\Devises\DeviseCreateController;
 use App\Http\Controllers\Devises\DeviseDeleteController;
 use App\Http\Controllers\Devises\DeviseShowController;
 use App\Http\Controllers\Devises\DeviseUpdateController;
+use App\Http\Controllers\Frais\FraisCreateController;
+use App\Http\Controllers\Frais\FraisDeleteController;
+use App\Http\Controllers\Frais\FraisShowController;
+use App\Http\Controllers\Frais\FraisUpdateController;
 use App\Http\Controllers\Permissions\PermissionController;
 use App\Http\Controllers\Roles\RoleAssigneController;
 use App\Http\Controllers\Roles\RoleCreateController;
@@ -30,10 +34,6 @@ use App\Http\Controllers\Roles\RoleDeleteController;
 use App\Http\Controllers\Roles\RoleListeUsersDuRoleController;
 use App\Http\Controllers\Roles\RoleShowController;
 use App\Http\Controllers\Roles\RoleUpdateController;
-use App\Http\Controllers\Taux\TauxCreateController;
-use App\Http\Controllers\Taux\TauxDeleteController;
-use App\Http\Controllers\Taux\TauxShowController;
-use App\Http\Controllers\Taux\TauxUpdateController;
 use App\Http\Controllers\Transfert\TransfertAnnulerController;
 use App\Http\Controllers\Transfert\TransfertDeleteController;
 use App\Http\Controllers\Transfert\TransfertEnvoieController;
@@ -43,6 +43,10 @@ use App\Http\Controllers\Transfert\TransfertUpdateController;
 use App\Http\Controllers\Roles\RolePermissions\RolePermissionsAssignPermissionController;
 use App\Http\Controllers\Roles\RolePermissions\RolePermissionsRevokePermissionController;
 use App\Http\Controllers\Roles\RolePermissions\RolePermissionsShowController;
+use App\Http\Controllers\Taux\TauxCreateController;
+use App\Http\Controllers\Taux\TauxDeleteController;
+use App\Http\Controllers\Taux\TauxShowController;
+use App\Http\Controllers\Taux\TauxUpdateController;
 
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -123,9 +127,11 @@ Route::delete('/permissions/{id}', [PermissionController::class, 'destroy']);
  * ********************************************************/
 Route::get('/taux/all', [TauxShowController::class, 'index']);
 Route::get('/taux/getById/{id}', [TauxShowController::class, 'getById']);
-Route::post('/taux/create', [TauxCreateController::class, 'store']);
 Route::put('/taux/updateById/{id}', [TauxUpdateController::class, 'updateById']);
 Route::delete('/taux/deleteById/{id}', [TauxDeleteController::class, 'deleteById']);
+Route::post('/taux/createById', [TauxCreateController::class, 'createById']);
+Route::post('/taux/createByName', [TauxCreateController::class, 'storeByName']);
+
 
 /**********************************************************
  *   
@@ -170,3 +176,15 @@ Route::put('/transferts/updateById/{id}', [TransfertUpdateController::class, 'up
 Route::put('/transferts/updateByCode/{code}', [TransfertUpdateController::class, 'updateByCode']);
 Route::delete('/transferts/deleteById/{id}', [TransfertDeleteController::class, 'deleteById']);
 Route::delete('/transferts/deleteByCode/{id}', [TransfertDeleteController::class, 'deleteByCode']);
+
+
+/**********************************************************
+ *   
+ * FRAIS 
+ * 
+ * ********************************************************/
+Route::get('/frais/all', [FraisShowController::class, 'index']);
+Route::get('/frais/getById/{id}', [FraisShowController::class, 'show']);
+Route::post('/frais/create', [FraisCreateController::class, 'create']);
+Route::put('/frais/updateById/{id}', [FraisUpdateController::class, 'updateById']);
+Route::delete('/frais/deleteById/{id}', [FraisDeleteController::class, 'deleteById']);
