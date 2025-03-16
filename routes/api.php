@@ -48,6 +48,7 @@ use App\Http\Controllers\Taux\TauxDeleteController;
 use App\Http\Controllers\Taux\TauxShowController;
 use App\Http\Controllers\Taux\TauxUpdateController;
 use App\Http\Controllers\User\UserAffecterAgenceController;
+use App\Http\Controllers\User\UserDesacfecterAgenceController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -79,7 +80,9 @@ Route::delete('conversions/{conversion}', [ConversionController::class, 'destroy
  * USER  
  * 
  * ********************************************************/
+Route::post('/users/affecterByReference/{id}', [UserAffecterAgenceController::class, 'affecterParReferenceAgence']);
 Route::post('/users/affecter-agence/{id}', [UserAffecterAgenceController::class, 'affecterAgence']);
+Route::delete('/users/desaffecter-agence/{id}', [UserDesacfecterAgenceController::class, 'desaffecterAgence']);
 Route::post('/users/create', [CreateUserController::class, 'store']);
 Route::get('/users/all', [ShowUserController::class, 'index']);
 Route::get('/users/getById/{id}', [ShowUserController::class, 'getById']);
@@ -97,7 +100,6 @@ Route::get('/agences/all', [AgenceShowController::class, 'index']);
 Route::get('/agences/getById/{id}', [AgenceShowController::class, 'show']);
 Route::put('/agences/updateById/{id}', [AgenceUpdateController::class, 'updateById']);
 Route::delete('/agences/deleteById/{id}', [AgenceDeleteController::class, 'deleteById']);
-
 
 
 /**********************************************************
@@ -121,6 +123,12 @@ Route::post('/permissions', [PermissionController::class, 'create']);
 Route::get('/permissions/{id}', [PermissionController::class, 'show']);
 Route::put('/permissions/{id}', [PermissionController::class, 'update']);
 Route::delete('/permissions/{id}', [PermissionController::class, 'destroy']);
+//Role permissions : 
+Route::post('roles/{roleId}/assign-permissions', [RolePermissionsAssignPermissionController::class, 'assignPermissionsToRole']); // Assigner une ou plusieurs permissions à un rôle
+Route::post('roles/{roleId}/revoke-permission', [RolePermissionsRevokePermissionController::class, 'revokePermissionFromRole']); // Retirer une permission d'un rôle
+Route::get('/roles-permissions-liste', [RolePermissionsShowController::class, 'listRolesPermissions']); // Lister rôles et permissions
+Route::get('/role/{roleId}/oneRolePermissions', [RolePermissionsShowController::class, 'getRolePermissions']); // Route pour récupérer les permissions d'un rôle spécifique
+
 
 /**********************************************************
  *   
@@ -133,7 +141,6 @@ Route::put('/taux/updateById/{id}', [TauxUpdateController::class, 'updateById'])
 Route::delete('/taux/deleteById/{id}', [TauxDeleteController::class, 'deleteById']);
 Route::post('/taux/createById', [TauxCreateController::class, 'createById']);
 Route::post('/taux/createByName', [TauxCreateController::class, 'storeByName']);
-
 
 /**********************************************************
  *   
@@ -154,13 +161,6 @@ Route::get('/roles/{id}/all-users-du-role', [RoleListeUsersDuRoleController::cla
 //Revoke ne marche pas
 // Route::post('users/{userId}/revoke-role', [RoleController::class, 'revokeRole']);// Retirer un rôle d'un utilisateur
  
-
-//Role permissions : 
-Route::post('roles/{roleId}/assign-permissions', [RolePermissionsAssignPermissionController::class, 'assignPermissionsToRole']); // Assigner une ou plusieurs permissions à un rôle
-Route::post('roles/{roleId}/revoke-permission', [RolePermissionsRevokePermissionController::class, 'revokePermissionFromRole']); // Retirer une permission d'un rôle
-Route::get('/roles-permissions-liste', [RolePermissionsShowController::class, 'listRolesPermissions']); // Lister rôles et permissions
-Route::get('/role/{roleId}/oneRolePermissions', [RolePermissionsShowController::class, 'getRolePermissions']); // Route pour récupérer les permissions d'un rôle spécifique
-
 
 /**********************************************************
  *   
