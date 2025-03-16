@@ -31,6 +31,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'date_naissance',
         'adresse_id',
         'role_id', 
+        'agence_id',
     ];
 
     public function role()
@@ -41,6 +42,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function adresse()
     {
         return $this->belongsTo(Adresse::class);
+    }
+
+    public function agence()
+    {
+        return $this->belongsTo(Agence::class);
     }
 
     // Relation to include role data

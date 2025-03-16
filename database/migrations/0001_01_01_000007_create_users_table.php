@@ -23,17 +23,21 @@ return new class extends Migration
             $table->date('date_naissance')->default('9999-12-31');
             $table->enum('civilite', ['Mr', 'Mme', 'Mlle', 'Autre'])->default('Autre');
             $table->string('password'); 
-            $table->foreignId('role_id')->constrained('roles')->onDelete('restrict')->default(1); // Relation avec la table des rôles
+            $table->foreignId('role_id')->constrained('roles')->onDelete('restrict')->default(1);
+    
+            // Ajout de la clé étrangère vers la table agences
+            $table->foreignId('agence_id')->nullable()->constrained('agences')->onDelete('set null');
+    
             $table->rememberToken(); 
             $table->timestamps();
         });
-
+    
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
             $table->timestamp('created_at')->nullable();
         });
-
+    
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->foreignId('user_id')->nullable()->index();
@@ -43,7 +47,7 @@ return new class extends Migration
             $table->integer('last_activity')->index();
         });
     }
-
+    
     /**
      * Reverse the migrations.
      */
