@@ -49,6 +49,11 @@ use App\Http\Controllers\Taux\TauxShowController;
 use App\Http\Controllers\Taux\TauxUpdateController;
 use App\Http\Controllers\User\UserAffecterAgenceController;
 
+use L5Swagger\Http\Controllers\SwaggerController;
+
+Route::get('/api/documentation', [SwaggerController::class, 'api']);
+
+
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/resend-verification-email', [AuthController::class, 'resendVerificationEmail'])->middleware('auth:sanctum');

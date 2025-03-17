@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use OpenApi\Annotations as OA;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Traits\JsonResponseTrait; 
@@ -11,8 +12,21 @@ use Illuminate\Http\Request;
 class ShowUserController extends Controller
 {
     use JsonResponseTrait; 
-
-    /**
+        /**
+     * @OA\Get(
+     *     path="/api/users",
+     *     tags={"Users"},
+     *     summary="Liste des utilisateurs",
+     *     description="Retourne la liste des utilisateurs",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Succès"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Non autorisé"
+     *     )
+     * )
      * Récupérer la liste de tous les utilisateurs avec leurs adresses et rôles.
      *
      * @return \Illuminate\Http\JsonResponse
