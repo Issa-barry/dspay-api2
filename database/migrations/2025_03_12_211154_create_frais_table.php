@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('nom');
             $table->enum('type', ['fixe', 'pourcentage']);
             $table->decimal('valeur', 10, 2);
+            $table->decimal('montant_min', 10, 2)->default(0);
+            $table->decimal('montant_max', 10, 2)->nullable();
             $table->timestamps();
         });
     }

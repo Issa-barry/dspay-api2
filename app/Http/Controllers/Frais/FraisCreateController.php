@@ -61,6 +61,8 @@ class FraisCreateController extends Controller
             'nom' => 'required|string|min:3|max:255',
             'type' => 'required|in:fixe,pourcentage',
             'valeur' => 'required|numeric|min:0',
+            'montant_min' => 'required|numeric|min:0',
+            'montant_max' => 'numeric',
         ]);
     }
 

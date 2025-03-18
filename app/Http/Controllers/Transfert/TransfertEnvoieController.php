@@ -88,25 +88,25 @@ class TransfertEnvoieController extends Controller
     // }
     private function calculerFrais($montant)
     {
-        // Déterminer quel frais appliquer en fonction du montant
-        if ($montant <= 50) {
-            $frais = Frais::where('nom', 'Gratuite')->first();
-        } elseif ($montant > 50 && $montant <= 1000) {
-            $frais = Frais::where('nom', 'Standard')->first();
-        } else {
-            $frais = null; // Ajoute une règle si nécessaire pour > 1000€
-        }
+        // Rechercher le frais correspondant au montant du transfert
+        $frais = Frais::where('montant_min', '<=', $montant)
+                      ->where(function ($query) use ($montant) {
+                          $query->where('montant_max', '>=', $montant)
+                                ->orWhereNull('montant_max'); // Si null, pas de limite supérieure
+                      })
+                      ->orderBy('montant_min', 'asc') // Assurer l'ordre
+                      ->first();
     
         // Vérifier si un frais a été trouvé
         if (!$frais) {
             return 0; // Aucun frais applicable
         }
     
-        // Appliquer la bonne méthode de calcul en fonction du type
+        // Appliquer la méthode de calcul en fonction du type de frais
         if ($frais->type === 'pourcentage') {
-            return max(1, $montant * ($frais->valeur / 100)); // Ex: 2% du montant
+            return max(1, $montant * ($frais->valeur / 100)); // Exemple : 2% du montant
         } else {
-            return $frais->valeur; // Valeur fixe
+            return $frais->valeur; // Frais fixe
         }
     }
     

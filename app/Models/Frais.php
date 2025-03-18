@@ -15,5 +15,7 @@ class Frais extends Model
         'nom', // Nom du type de frais
         'type', // Pourcentage ou fixe
         'valeur', // Valeur du frais
+        'montant_min',
+        'montant_max'
     ];
-}
+} 
