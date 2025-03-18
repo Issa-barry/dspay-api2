@@ -20,41 +20,47 @@ class TransfertEnvoieController extends Controller
     use JsonResponseTrait;
 
     /**
-     * Créer un transfert de devise en utilisant un taux déjà existant et en appliquant des frais spécifiques.
+     * Créer un transfert de devise en utilisant un taux existant et en appliquant les frais spécifiques.
      */
     public function store(Request $request)
     {
+        // Validation de la requête
         $validated = $this->validateRequest($request);
         if ($validated->fails()) {
             return $this->responseJson(false, 'Validation échouée.', $validated->errors(), 422);
         }
 
         try {
+            // Récupérer les données nécessaires
             $tauxEchange = TauxEchange::findOrFail($request->taux_echange_id);
             $deviseSource = Devise::findOrFail($tauxEchange->devise_source_id);
             $deviseCible = Devise::findOrFail($tauxEchange->devise_cible_id);
 
+            // Calcul du montant converti
             $montantConverti = $request->montant_expediteur * $tauxEchange->taux;
-            // $frais = $this->calculerFrais($request->montant_expediteur, $fraisConfig);
+
+            // Calcul des frais basés sur le montant
             $frais = $this->calculerFrais($request->montant_expediteur);
             $total = $request->montant_expediteur + $frais;
 
-            // $transfert = Transfert::create($this->mapTransfertData($request, $tauxEchange, $deviseSource, $deviseCible, $montantConverti, $frais, $total));
+            // Créer les données du transfert
             $transfertData = $this->mapTransfertData($request, $tauxEchange, $deviseSource, $deviseCible, $montantConverti, $frais, $total);
-            // $transfertData['agent_id'] = auth('sanctum')->id(); // Ajout de l'agent connecté
-            $transfertData['agent_id'] = auth('sanctum')->id() ?? auth('api')->id();
+            $transfertData['agent_id'] = auth('sanctum')->id() ?? auth('api')->id(); // Ajout de l'agent connecté
 
+            // Créer le transfert
             $transfert = Transfert::create($transfertData);
-            
+
+            // Créer la facture associée
             $this->createFacture($transfert);
+
+            // Envoyer un email de confirmation
             $this->envoyerEmailConfirmation($transfert);
 
-            // return $this->responseJson(true, 'Transfert effectué avec succès.', $transfert, 201);
+            // Retourner une réponse JSON avec succès
             return $this->responseJson(true, 'Transfert effectué avec succès.', [
                 'transfert' => $transfert,
                 'agent' => $transfert->agent ? $transfert->agent->nom_complet : 'Non assigné'
             ], 201);
-            
         } catch (Exception $e) {
             return $this->responseJson(false, 'Erreur lors de la création du transfert.', ['message' => $e->getMessage()], 500);
         }
@@ -78,14 +84,8 @@ class TransfertEnvoieController extends Controller
     }
 
     /**
-     * Calculer les frais du transfert.
+     * Calculer les frais du transfert selon les bornes et type.
      */
-    // private function calculerFrais($montant, Frais $fraisConfig)
-    // {
-    //     return $fraisConfig->type === 'pourcentage' 
-    //         ? max(1, $montant * ($fraisConfig->valeur / 100)) 
-    //         : $fraisConfig->valeur;
-    // }
     private function calculerFrais($montant)
     {
         // Rechercher le frais correspondant au montant du transfert
@@ -94,22 +94,21 @@ class TransfertEnvoieController extends Controller
                           $query->where('montant_max', '>=', $montant)
                                 ->orWhereNull('montant_max'); // Si null, pas de limite supérieure
                       })
-                      ->orderBy('montant_min', 'asc') // Assurer l'ordre
+                      ->orderBy('montant_min', 'asc') // Assurer l'ordre croissant
                       ->first();
-    
-        // Vérifier si un frais a été trouvé
+
+        // Si aucun frais n'est trouvé, retourner 0
         if (!$frais) {
-            return 0; // Aucun frais applicable
+            return 0;
         }
-    
-        // Appliquer la méthode de calcul en fonction du type de frais
+
+        // Calculer les frais en fonction du type (fixe ou pourcentage)
         if ($frais->type === 'pourcentage') {
-            return max(1, $montant * ($frais->valeur / 100)); // Exemple : 2% du montant
-        } else {
-            return $frais->valeur; // Frais fixe
+            return max(1, $montant * ($frais->valeur / 100)); // Applique le pourcentage
         }
+
+        return $frais->valeur; // Applique les frais fixes
     }
-    
 
     /**
      * Mapper les données du transfert.
@@ -163,4 +162,4 @@ class TransfertEnvoieController extends Controller
             Mail::to($transfert->expediteur_email)->send(new TransfertNotification($transfert));
         }
     }
-} 
+}
