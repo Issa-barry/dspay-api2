@@ -17,7 +17,13 @@ class Agence extends Model
         'statut',
         'date_creation',
         'adresse_id',
+        'responsable_id'
     ];
+
+    public function responsable()
+    {
+        return $this->belongsTo(User::class, 'responsable_id');
+    }
 
     public function users()
     {
