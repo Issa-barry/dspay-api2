@@ -167,8 +167,6 @@ Route::get('/roles/{id}/all-users-du-role', [RoleListeUsersDuRoleController::cla
  * TRANSFERT 
  * 
  * ********************************************************/
-Route::middleware('auth:sanctum')->post('/transferts/envoie', [TransfertEnvoieController::class, 'store']);
-
 // Route::post('/transferts/envoie', [TransfertEnvoieController::class, 'store']);
 Route::post('/transferts/annuler/{id}', [TransfertAnnulerController::class, 'annulerTransfert']);
 Route::post('/transferts/retrait', [TransfertRetraitController::class, 'validerRetrait']);
@@ -180,6 +178,10 @@ Route::put('/transferts/updateById/{id}', [TransfertUpdateController::class, 'up
 Route::put('/transferts/updateByCode/{code}', [TransfertUpdateController::class, 'updateByCode']);
 Route::delete('/transferts/deleteById/{id}', [TransfertDeleteController::class, 'deleteById']);
 Route::delete('/transferts/deleteByCode/{id}', [TransfertDeleteController::class, 'deleteByCode']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/transferts/envoie', [TransfertEnvoieController::class, 'store']);
+});
 
 
 /**********************************************************

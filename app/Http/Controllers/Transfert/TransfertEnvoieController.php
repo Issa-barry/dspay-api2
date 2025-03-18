@@ -33,10 +33,10 @@ class TransfertEnvoieController extends Controller
             $tauxEchange = TauxEchange::findOrFail($request->taux_echange_id);
             $deviseSource = Devise::findOrFail($tauxEchange->devise_source_id);
             $deviseCible = Devise::findOrFail($tauxEchange->devise_cible_id);
-            $fraisConfig = Frais::findOrFail($request->frais_id);
 
             $montantConverti = $request->montant_expediteur * $tauxEchange->taux;
-            $frais = $this->calculerFrais($request->montant_expediteur, $fraisConfig);
+            // $frais = $this->calculerFrais($request->montant_expediteur, $fraisConfig);
+            $frais = $this->calculerFrais($request->montant_expediteur);
             $total = $request->montant_expediteur + $frais;
 
             // $transfert = Transfert::create($this->mapTransfertData($request, $tauxEchange, $deviseSource, $deviseCible, $montantConverti, $frais, $total));
@@ -74,19 +74,42 @@ class TransfertEnvoieController extends Controller
             'expediteur_nom_complet' => 'required|string|max:255',
             'expediteur_phone' => 'required|string|max:20',
             'expediteur_email' => 'required|email|max:255',
-            'frais_id' => 'required|exists:frais,id',
         ]);
     }
 
     /**
      * Calculer les frais du transfert.
      */
-    private function calculerFrais($montant, Frais $fraisConfig)
+    // private function calculerFrais($montant, Frais $fraisConfig)
+    // {
+    //     return $fraisConfig->type === 'pourcentage' 
+    //         ? max(1, $montant * ($fraisConfig->valeur / 100)) 
+    //         : $fraisConfig->valeur;
+    // }
+    private function calculerFrais($montant)
     {
-        return $fraisConfig->type === 'pourcentage' 
-            ? max(1, $montant * ($fraisConfig->valeur / 100)) 
-            : $fraisConfig->valeur;
+        // Déterminer quel frais appliquer en fonction du montant
+        if ($montant <= 50) {
+            $frais = Frais::where('nom', 'Gratuite')->first();
+        } elseif ($montant > 50 && $montant <= 1000) {
+            $frais = Frais::where('nom', 'Standard')->first();
+        } else {
+            $frais = null; // Ajoute une règle si nécessaire pour > 1000€
+        }
+    
+        // Vérifier si un frais a été trouvé
+        if (!$frais) {
+            return 0; // Aucun frais applicable
+        }
+    
+        // Appliquer la bonne méthode de calcul en fonction du type
+        if ($frais->type === 'pourcentage') {
+            return max(1, $montant * ($frais->valeur / 100)); // Ex: 2% du montant
+        } else {
+            return $frais->valeur; // Valeur fixe
+        }
     }
+    
 
     /**
      * Mapper les données du transfert.
