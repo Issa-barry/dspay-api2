@@ -167,7 +167,9 @@ Route::get('/roles/{id}/all-users-du-role', [RoleListeUsersDuRoleController::cla
  * TRANSFERT 
  * 
  * ********************************************************/
-Route::post('/transferts/envoie', [TransfertEnvoieController::class, 'store']);
+Route::middleware('auth:sanctum')->post('/transferts/envoie', [TransfertEnvoieController::class, 'store']);
+
+// Route::post('/transferts/envoie', [TransfertEnvoieController::class, 'store']);
 Route::post('/transferts/annuler/{id}', [TransfertAnnulerController::class, 'annulerTransfert']);
 Route::post('/transferts/retrait', [TransfertRetraitController::class, 'validerRetrait']);
 Route::get('/transferts/all', [TransfertShowController::class, 'index']);

@@ -27,7 +27,14 @@ class Transfert extends Model
         'frais',
         'total',
         'statut', 
+        'agent_id' 
     ]; 
+
+        public function agent()
+    {
+        return $this->belongsTo(User::class, 'agent_id');
+    }
+
 
      public function facture()
      {

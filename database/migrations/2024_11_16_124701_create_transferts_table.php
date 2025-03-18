@@ -31,13 +31,11 @@ return new class extends Migration
             $table->string('expediteur_phone');
             $table->string('expediteur_email')->nullable();
 
-            // Devises liées
+            // liens
             $table->foreignId('devise_source_id')->constrained('devises')->onDelete('cascade');
             $table->foreignId('devise_cible_id')->constrained('devises')->onDelete('cascade');
-
-
-            // Lien vers le taux de change utilisé
             $table->foreignId('taux_echange_id')->nullable()->constrained('taux_echanges')->onDelete('set null');
+            $table->foreignId('agent_id')->nullable()->constrained('users')->onDelete('set null');
 
             $table->timestamps();
         });

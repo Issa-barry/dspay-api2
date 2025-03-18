@@ -39,11 +39,22 @@ class TransfertEnvoieController extends Controller
             $frais = $this->calculerFrais($request->montant_expediteur, $fraisConfig);
             $total = $request->montant_expediteur + $frais;
 
-            $transfert = Transfert::create($this->mapTransfertData($request, $tauxEchange, $deviseSource, $deviseCible, $montantConverti, $frais, $total));
+            // $transfert = Transfert::create($this->mapTransfertData($request, $tauxEchange, $deviseSource, $deviseCible, $montantConverti, $frais, $total));
+            $transfertData = $this->mapTransfertData($request, $tauxEchange, $deviseSource, $deviseCible, $montantConverti, $frais, $total);
+            // $transfertData['agent_id'] = auth('sanctum')->id(); // Ajout de l'agent connecté
+            $transfertData['agent_id'] = auth('sanctum')->id() ?? auth('api')->id();
+
+            $transfert = Transfert::create($transfertData);
+            
             $this->createFacture($transfert);
             $this->envoyerEmailConfirmation($transfert);
 
-            return $this->responseJson(true, 'Transfert effectué avec succès.', $transfert, 201);
+            // return $this->responseJson(true, 'Transfert effectué avec succès.', $transfert, 201);
+            return $this->responseJson(true, 'Transfert effectué avec succès.', [
+                'transfert' => $transfert,
+                'agent' => $transfert->agent ? $transfert->agent->nom_complet : 'Non assigné'
+            ], 201);
+            
         } catch (Exception $e) {
             return $this->responseJson(false, 'Erreur lors de la création du transfert.', ['message' => $e->getMessage()], 500);
         }
@@ -129,4 +140,4 @@ class TransfertEnvoieController extends Controller
             Mail::to($transfert->expediteur_email)->send(new TransfertNotification($transfert));
         }
     }
-}
+} 
