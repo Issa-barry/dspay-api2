@@ -29,10 +29,9 @@ class TransfertUpdateController extends Controller
             }
 
             $validatedData = $request->validate([
-                'receveur_nom' => 'string|max:255',
-                'receveur_prenom' => 'string|max:255',
-                'receveur_phone' => 'string|max:20',
-                'quartier' => 'string|max:255',
+                'receveur_nom_complet' => 'required|string|max:255', 
+                'receveur_phone' => 'required|string|max:20',
+                'quartier' => 'required|string|max:255',
             ]);
 
             $transfert->update($validatedData);
@@ -62,10 +61,9 @@ public function updateById(Request $request, $id)
 
         // Validation des données à mettre à jour
         $validatedData = $request->validate([
-            'receveur_nom' => 'string|max:255',
-            'receveur_prenom' => 'string|max:255',
-            'receveur_phone' => 'string|max:20',
-            'quartier' => 'string|max:255',
+            'receveur_nom_complet' => 'required|string|max:255', 
+            'receveur_phone' => 'required|string|max:20',
+            'quartier' => 'required|string|max:255',
         ]);
 
         // Mise à jour des champs

@@ -56,10 +56,14 @@ class TransfertShowController extends Controller
             }
 
             return $this->responseJson(true, 'Transfert récupéré avec succès.', $transfert);
+            // return $this->responseJson(true, 'Transfert effectué avec succès.', [
+            //     'transfert' => $transfert,
+            //     'agent' => $transfert->agent ? $transfert->agent->nom_complet : 'Non assigné'
+            // ], 201);
         } catch (Exception $e) {
             return $this->responseJson(false, 'Erreur lors de la récupération du transfert.', $e->getMessage(), 500);
         }
-    }
+    } 
 
     /**
      * Afficher un transfert spécifique par son code.
@@ -85,6 +89,10 @@ class TransfertShowController extends Controller
             }
 
             return $this->responseJson(true, 'Transfert récupéré avec succès.', $transfert);
+            // return $this->responseJson(true, 'Transfert effectué avec succès.', [
+            //     'transfert' => $transfert,
+            //     'agent' => $transfert->agent ? $transfert->agent->nom_complet : 'Non assigné'
+            // ], 201);
         } catch (Exception $e) {
             return $this->responseJson(false, 'Erreur lors de la récupération du transfert.', $e->getMessage(), 500);
         }
