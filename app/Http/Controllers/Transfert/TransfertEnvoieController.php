@@ -52,7 +52,7 @@ class TransfertEnvoieController extends Controller
 
             // Créer la facture associée
             $this->createFacture($transfert);
-
+ 
             // Envoyer un email de confirmation
             $this->envoyerEmailConfirmation($transfert);
 

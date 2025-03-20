@@ -11,7 +11,7 @@ use Illuminate\Validation\ValidationException;
 
 class AgenceCreateController extends Controller
 {
-    use JsonResponseTrait;  
+    use JsonResponseTrait;
 
     /**
      * Créer une nouvelle agence.
@@ -21,7 +21,7 @@ class AgenceCreateController extends Controller
      */
     public function store(Request $request)
     {
-        try { 
+        try {
             $validated = $request->validate([
                 'nom_agence' => 'required|string|max:255',
                 'phone' => 'required|string|max:20|unique:agences,phone',
@@ -33,13 +33,16 @@ class AgenceCreateController extends Controller
                 'adresse.complement_adresse' => 'nullable|string|max:255',
                 'adresse.ville' => 'required|string|max:255',
                 'adresse.code_postal' => 'required|string|max:20',
+                'responsable_id' => 'required|exists:users,id' // Responsable obligatoire
             ]);
 
+            // Créer l'adresse
             $adresse = Adresse::create($validated['adresse']);
- 
+
+            // Créer l'agence avec le responsable
             $agence = Agence::create(array_merge($validated, ['adresse_id' => $adresse->id]));
 
-            return $this->responseJson(true, 'Agence créée avec succès.', $agence->load('adresse'), 201);
+            return $this->responseJson(true, 'Agence créée avec succès.', $agence->load('adresse', 'responsable'), 201);
         } catch (ValidationException $e) {
             return $this->responseJson(false, 'Échec de la validation des données.', $e->errors(), 422);
         } catch (\Exception $e) {
