@@ -167,7 +167,7 @@
                     </main>
 
                     <footer class="py-16 text-center text-sm text-black dark:text-white/70">
-                        V2.0.0 | 11.03.2025
+                        V2.2.0 | 20.03.2025
                       <!-- Laravel v{{ Illuminate\Foundation\Application::VERSION }} (PHP v{{ PHP_VERSION }})-->
                     </footer>
                 </div>
