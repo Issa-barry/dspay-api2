@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Adresse;
 use App\Models\Role;
 use App\Models\User;
+use App\Notifications\CustomVerifyEmail;
 use App\Traits\JsonResponseTrait; 
 use Illuminate\Database\QueryException;
 use Illuminate\Validation\ValidationException;
@@ -66,7 +67,8 @@ class CreateUserController extends Controller
 
                 try {
                     // Envoi de l'email de vérification
-                    $user->sendEmailVerificationNotification();
+                    // $user->sendEmailVerificationNotification();
+                    $user->notify(new CustomVerifyEmail());
                 } catch (Exception $e) {
                     Log::error('Erreur lors de l\'envoi de l\'email de vérification : ' . $e->getMessage());
                     return $this->responseJson(true, 'Utilisateur créé, mais l\'email de vérification n\'a pas pu être envoyé.', $user->load('adresse'), 201);
