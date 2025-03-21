@@ -43,10 +43,10 @@
             color: #6c757d;
         }
     </style>
-</head>
+</head> 
 <body>
     <h1>Détails du transfert</h1>
-    <p>Bonjour {{ $transfert->expediteur_prenom }} {{ $transfert->expediteur_nom }},</p>
+    <p>Bonjour {{ $transfert->expediteur_nom_complet }},</p>
 
     <p>Voici les détails de votre transfert:</p>
 
@@ -57,7 +57,7 @@
         </tr>
         <tr>
             <th>Bénéficiaire :</th>
-            <td>{{ $transfert->receveur_prenom }} {{ $transfert->receveur_nom }}<br>{{ $transfert->receveur_phone }}</td>
+            <td>{{ $transfert->receveur_nom_complet }}<br>{{ $transfert->receveur_phone }}</td>
         </tr>
         <tr>
             <th>Montant à récupérer :</th>
