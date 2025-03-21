@@ -23,9 +23,12 @@ class CustomVerifyEmail extends BaseVerifyEmail
             ]
         );
 
-        // 👉 Redirige vers ton frontend avec l'URL signée en paramètre
-        // return 'https://ton-frontend.com/email-verified?redirect=' . urlencode($signedURL);
-        return 'http://localhost:4200/#/auth/validation?redirect=' . urlencode($signedURL);
+        $frontendUrl = config('app.frontend_verify_email_url');
+
+        return $frontendUrl . '?redirect=' . urlencode($signedURL);
+
+
+        // return 'http://localhost:4200/#/auth/validation?redirect=' . urlencode($signedURL);
 
     }
 

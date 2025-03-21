@@ -123,6 +123,19 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+/********IBA */
+    /*
+    |--------------------------------------------------------------------------
+    | Frontend URL for Email Verification
+    |--------------------------------------------------------------------------
+    |
+    | This URL est utilisée pour rediriger les utilisateurs vers l'interface
+    | Angular (ou autre frontend) après une action importante comme
+    | la vérification de l'adresse e-mail. Elle peut varier selon l'environnement.
+    |
+    */
+
+    'frontend_verify_email_url' => env('FRONTEND_VERIFY_EMAIL_URL', `http://localhost:4200/auth/validation`),
 
   
 ];
