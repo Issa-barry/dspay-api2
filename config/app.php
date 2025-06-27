@@ -136,6 +136,7 @@ return [
     */
 
     'frontend_verify_email_url' => env('FRONTEND_VERIFY_EMAIL_URL', `http://localhost:4200/auth/validation`),
-
+    'frontend_newpassword_url' => env('FRONTEND_NEWPASSWORD_URL', `http://localhost:4200/auth/newpassword`), // URL pour la réinitialisation du mot de passe
   
 ];
+ 

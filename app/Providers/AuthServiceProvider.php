@@ -27,15 +27,16 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        // Personnaliser le lien de réinitialisation pour les API
+        // Utilise l'URL définie dans .env (FRONTEND_NEWPASSWORD_URL)
         ResetPassword::createUrlUsing(function ($user, string $token) {
-            return url("/api/reset-password/{$token}?email={$user->email}");
+            $resetUrl = config('app.frontend_newpassword_url');
+            return "{$resetUrl}?token={$token}&email=" . urlencode($user->email);
+            // return url("/api/reset-password/{$token}?email={$user->email}"); //ancien
         });
 
-         // Définir l'expiration des routes signées à 1 minute.
-         URL::defaults([
-            'expire' => now()->addMinutes(1), 
+        // Définir l'expiration des routes signées à 1 minute.
+        URL::defaults([
+            'expire' => now()->addMinutes(1),
         ]);
     }
- 
 }
