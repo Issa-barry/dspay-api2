@@ -86,17 +86,17 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $validator = Validator::make(
-        $request->all(),
-        [
-            'email' => 'required|email',
-            'password' => 'required|string',
-        ],
-        [
-            'email.required' => 'L\'adresse email est obligatoire.',
-            'email.email' => 'Le format de l\'adresse email est invalide.',
-            'password.required' => 'Le mot de passe est requis.',
-        ]
-    );
+            $request->all(),
+            [
+                'email' => 'required|email',
+                'password' => 'required|string',
+            ],
+            [
+                'email.required' => 'L\'adresse email est obligatoire.',
+                'email.email' => 'Le format de l\'adresse email est invalide.',
+                'password.required' => 'Le mot de passe est requis.',
+            ]
+        );
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
@@ -154,33 +154,54 @@ class AuthController extends Controller
         ], 400);
     }
 
-    // Réinitialisation du mot de passe
     public function resetPassword(Request $request)
     {
+        $messages = [
+            'email.required' => 'L\'adresse email est obligatoire.',
+            'email.email' => 'L\'adresse email n\'est pas valide.',
+            'password.required' => 'Le mot de passe est obligatoire.',
+            'password.min' => 'Le mot de passe doit contenir au moins 8 caractères.',
+            'password.confirmed' => 'La confirmation du mot de passe ne correspond pas.',
+        ];
+
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required|string|min:8|confirmed',
-        ]);
+        ], $messages);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            $errors = $validator->errors()->toArray();
+
+            // Déplacer le message de confirmation si présent
+            if (isset($errors['password'])) {
+                foreach ($errors['password'] as $index => $message) {
+                    if (str_contains($message, 'confirmation')) {
+                        $errors['password_confirmation'][] = $message;
+                        unset($errors['password'][$index]);
+                    }
+                }
+
+                // Nettoyer si plus rien dans password
+                if (empty(array_filter($errors['password']))) {
+                    unset($errors['password']);
+                }
+            }
+
+            return $this->responseJson(false, 'Erreur de validation.', $errors, 422);
         }
 
-        // Vérification de l'email
         $user = User::where('email', $request->email)->first();
 
         if (!$user) {
-            return response()->json(['error' => 'Utilisateur non trouvé.'], 404);
+            return $this->responseJson(false, 'Aucun utilisateur trouvé avec cette adresse email.', null, 404);
         }
 
-        // Mise à jour du mot de passe
         $user->password = Hash::make($request->password);
         $user->save();
 
-        return response()->json([
-            'message' => 'Mot de passe réinitialisé avec succès.',
+        return $this->responseJson(true, 'Mot de passe réinitialisé.', [
             'user' => $user,
-        ], 200);
+        ]);
     }
 
 
