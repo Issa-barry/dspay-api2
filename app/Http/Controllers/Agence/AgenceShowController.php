@@ -51,4 +51,25 @@ class AgenceShowController extends Controller
             return $this->responseJson(false, 'Une erreur interne est survenue.', $e->getMessage(), 500);
         }
     }
+
+    /**
+     * Récupérer les détails d'une agence par référence.
+     *
+     * @param string $reference
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function showByReference($reference)
+    {
+        try {
+            $agence = Agence::with('adresse', 'responsable')->where('reference', $reference)->first();
+
+            if (!$agence) {
+                return $this->responseJson(false, 'Agence non trouvée avec cette référence.', null, 404);
+            }
+
+            return $this->responseJson(true, 'Agence trouvée.', $agence);
+        } catch (\Exception $e) {
+            return $this->responseJson(false, 'Erreur interne.', $e->getMessage(), 500);
+        }
+    }
 }
