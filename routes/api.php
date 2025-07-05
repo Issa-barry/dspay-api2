@@ -101,6 +101,11 @@ Route::get('/agences/getById/{id}', [AgenceShowController::class, 'show']);
 Route::put('/agences/updateById/{id}', [AgenceUpdateController::class, 'updateById']);
 Route::delete('/agences/deleteById/{id}', [AgenceDeleteController::class, 'deleteById']);
 
+use App\Http\Controllers\Agence\AgenceStatutController;
+
+Route::patch('/agences/{id}/statutUpdate', [AgenceStatutController::class, 'updateStatut']);
+
+
 
 /**********************************************************
  *   

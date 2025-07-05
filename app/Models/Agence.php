@@ -13,14 +13,14 @@ class Agence extends Model
         // 'reference',
         'nom_agence',
         'phone',
-        'email',
+        'email', 
         'statut',
         'date_creation',
         'adresse_id',
         'responsable_id'
     ];
 
-    public function responsable()
+    public function responsable() 
     {
         return $this->belongsTo(User::class, 'responsable_id');
     }

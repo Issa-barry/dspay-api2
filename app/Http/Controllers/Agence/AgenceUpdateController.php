@@ -46,16 +46,36 @@ class AgenceUpdateController extends Controller
                 'adresse.complement_adresse' => 'nullable|string|max:255',
                 'adresse.ville' => 'string|max:255',
                 'adresse.code_postal' => 'string|max:20',
+                'adresse.quartier' => 'nullable|string|max:255',
+                'adresse.region' => 'nullable|string|max:255',
             ]);
 
             // Si une nouvelle référence responsable est fournie
+            // Si une nouvelle référence responsable est fournie
+            // Si une nouvelle référence responsable est fournie
             if (!empty($validated['responsable_reference'])) {
                 $responsable = User::where('reference', $validated['responsable_reference'])->first();
-                if ($responsable) {
-                    $agence->responsable_id = $responsable->id;
+
+                if (!$responsable) {
+                    return $this->responseJson(false, 'Responsable introuvable.', null, 404);
                 }
+
+                // Vérifier le rôle
+                if (strtolower($responsable->role) !== 'responsable agence') {
+                    return $this->responseJson(false, 'L\'utilisateur désigné comme responssable n\'a pas le rôle "Responsable agence".', null, 422);
+                }
+
+                // Affecter comme responsable de l’agence
+                $agence->responsable_id = $responsable->id;
+
+                // Affecter l’agence à l’utilisateur aussi
+                $responsable->agence_id = $agence->id;
+                $responsable->save();
+
                 unset($validated['responsable_reference']);
             }
+
+
 
             // Mise à jour de l'adresse
             if (!empty($validated['adresse']) && $agence->adresse) {

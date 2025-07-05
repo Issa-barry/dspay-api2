@@ -18,7 +18,7 @@ class AgenceShowController extends Controller
     public function index()
     {
         try { 
-            $agences = Agence::with('adresse')->get();
+            $agences = Agence::with('adresse', 'responsable')->get();
 
             return $this->responseJson(true, 'Liste des agences récupérée avec succès.', $agences);
         } catch (\Exception $e) {
@@ -40,7 +40,7 @@ class AgenceShowController extends Controller
                 return $this->responseJson(false, 'ID invalide.', null, 400);
             }
  
-            $agence = Agence::with('adresse')->find($id);
+            $agence = Agence::with('adresse', 'responsable')->find($id);
 
             if (!$agence) {
                 return $this->responseJson(false, 'Agence non trouvée.', null, 404);
