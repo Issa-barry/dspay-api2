@@ -89,6 +89,11 @@ Route::get('/users/getById/{id}', [ShowUserController::class, 'getById']);
 Route::put('/users/updateById/{id}', [updateUserController::class, 'updateById']);
 Route::delete('/users/delateById/{id}', [DeleteUserController::class, 'delateById']);
 
+use App\Http\Controllers\User\UserStatutController;
+
+Route::patch('/users/{id}/statutUpdate', [UserStatutController::class, 'updateStatut']);
+
+
 
 /**********************************************************
  *   
@@ -98,8 +103,14 @@ Route::delete('/users/delateById/{id}', [DeleteUserController::class, 'delateByI
 Route::post('/agences/create', [AgenceCreateController::class, 'store']);
 Route::get('/agences/all', [AgenceShowController::class, 'index']);
 Route::get('/agences/getById/{id}', [AgenceShowController::class, 'show']);
+Route::get('/agences/getByReference/{reference}', [AgenceShowController::class, 'showByReference']);
 Route::put('/agences/updateById/{id}', [AgenceUpdateController::class, 'updateById']);
 Route::delete('/agences/deleteById/{id}', [AgenceDeleteController::class, 'deleteById']);
+
+use App\Http\Controllers\Agence\AgenceStatutController;
+
+Route::patch('/agences/{id}/statutUpdate', [AgenceStatutController::class, 'updateStatut']);
+
 
 
 /**********************************************************

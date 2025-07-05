@@ -47,20 +47,20 @@
 <body>
     <h1>Retrait !</h1>
 
-    <p>Bonjour {{ $transfert->expediteur_prenom }} {{ $transfert->expediteur_nom }} ,</p>
+    <p>Bonjour {{ $transfert->expediteur_nom_complet }} ,</p>
 
-    <p>{{ $transfert->receveur_prenom }} {{ $transfert->receveur_nom }} , a effectué le retrait de votre transfert.</p>
+    <p>{{ $transfert->receveur_nom_complet }} , a effectué le retrait de votre transfert.</p>
 
     <p><strong>Détails du transfert :</strong></p>
     
-    <table>
+    <table> 
         <tr>
             <th>Montant envoyé :</th>
-            <td>{{ $transfert->montant }} {{ $transfert->deviseSource->tag }}</td>
+            <td>{{ $transfert->montant_expediteur }} {{ $transfert->deviseSource->tag }}</td>
         </tr>
         <tr>
             <th>Montant retiré :</th>
-            <td>{{ $transfert->montant_converti }} {{ $transfert->deviseCible->tag }}</td>
+            <td>{{ $transfert->montant_receveur }} {{ $transfert->deviseCible->tag }}</td>
         </tr>
         <tr>
             <th>Quartier de retrait :</th>

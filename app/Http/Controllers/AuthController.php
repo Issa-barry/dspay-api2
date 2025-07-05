@@ -16,6 +16,16 @@ use Spatie\Permission\Models\Role;
 
 class AuthController extends Controller
 {
+
+    protected function responseJson($success, $message, $data = null, $statusCode = 200)
+    {
+        return response()->json([
+            'success' => $success,
+            'message' => $message,
+            'data' => $data
+        ], $statusCode);
+    }
+
     // Inscription
     public function register(Request $request)
     {
@@ -28,7 +38,7 @@ class AuthController extends Controller
             'date_naissance' => 'nullable|date',             // Date de naissance (facultatif)
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|string|exists:roles,name',  
+            'role' => 'required|string|exists:roles,name',
         ]);
 
         // Si la validation échoue, retourner une erreur
@@ -64,7 +74,6 @@ class AuthController extends Controller
                 'user' => $user,
                 'token' => $token,
             ], 201);
-
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Une erreur est survenue lors de l\'enregistrement.',
@@ -76,13 +85,21 @@ class AuthController extends Controller
     // Connexion
     public function login(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'password' => 'required|string',
-        ]);
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'email' => 'required|email',
+                'password' => 'required|string',
+            ],
+            [
+                'email.required' => 'L\'adresse email est obligatoire.',
+                'email.email' => 'Le format de l\'adresse email est invalide.',
+                'password.required' => 'Le mot de passe est requis.',
+            ]
+        );
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return response()->json(['error' => $validator->errors()], 422);
         }
 
         $user = User::where('email', $request->email)->first();
@@ -108,13 +125,13 @@ class AuthController extends Controller
     }
 
     public function logout(Request $request)
-        {
-            $request->user()->tokens()->delete();
-            return response()->json([
-                'message' => 'Déconnecté de tous les appareils.',
-            ], 200);
-        }
-    
+    {
+        $request->user()->tokens()->delete();
+        return response()->json([
+            'message' => 'Déconnecté de tous les appareils.',
+        ], 200);
+    }
+
     // Vérification de l'email
     public function verifyEmail(Request $request, $id, $hash)
     {
@@ -137,58 +154,104 @@ class AuthController extends Controller
         ], 400);
     }
 
-    // Réinitialisation du mot de passe
     public function resetPassword(Request $request)
     {
+        $messages = [
+            'email.required' => 'L\'adresse email est obligatoire.',
+            'email.email' => 'L\'adresse email n\'est pas valide.',
+            'password.required' => 'Le mot de passe est obligatoire.',
+            'password.min' => 'Le mot de passe doit contenir au moins 8 caractères.',
+            'password.confirmed' => 'La confirmation du mot de passe ne correspond pas.',
+        ];
+
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required|string|min:8|confirmed',
-        ]);
+        ], $messages);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            $errors = $validator->errors()->toArray();
+
+            // Déplacer le message de confirmation si présent
+            if (isset($errors['password'])) {
+                foreach ($errors['password'] as $index => $message) {
+                    if (str_contains($message, 'confirmation')) {
+                        $errors['password_confirmation'][] = $message;
+                        unset($errors['password'][$index]);
+                    }
+                }
+
+                // Nettoyer si plus rien dans password
+                if (empty(array_filter($errors['password']))) {
+                    unset($errors['password']);
+                }
+            }
+
+            return $this->responseJson(false, 'Erreur de validation.', $errors, 422);
         }
 
-        // Vérification de l'email
         $user = User::where('email', $request->email)->first();
 
         if (!$user) {
-            return response()->json(['error' => 'Utilisateur non trouvé.'], 404);
+            return $this->responseJson(false, 'Aucun utilisateur trouvé avec cette adresse email.', null, 404);
         }
 
-        // Mise à jour du mot de passe
         $user->password = Hash::make($request->password);
         $user->save();
 
-        return response()->json([
-            'message' => 'Mot de passe réinitialisé avec succès.',
+        return $this->responseJson(true, 'Mot de passe réinitialisé.', [
             'user' => $user,
-        ], 200); 
+        ]);
     }
 
+
     public function sendResetPasswordLink(Request $request)
-        {
-            $validator = Validator::make($request->all(), [
+    {
+        // Validation avec messages personnalisés
+        $validator = Validator::make(
+            $request->all(),
+            [
                 'email' => 'required|email|exists:users,email',
-            ]);
+            ],
+            [
+                'email.exists' => 'Aucun utilisateur n\'est enregistré avec cette adresse email.',
+                'email.required' => 'L\'adresse email est obligatoire.',
+                'email.email' => 'Le format de l\'adresse email est invalide.',
+            ]
+        );
 
-            if ($validator->fails()) {
-                return response()->json([
-                    'error' => 'Validation failed',
-                    'message' => $validator->errors()
-                ], 400);
-            }
-
-            $status = Password::sendResetLink(
-                $request->only('email')
+        // Si la validation échoue
+        if ($validator->fails()) {
+            return $this->responseJson(
+                false,
+                'Échec de validation.',
+                $validator->errors(),
+                422
             );
-
-            return $status === Password::RESET_LINK_SENT
-                ? response()->json(['message' => 'Lien de réinitialisation envoyé à votre email.'], 200)
-                : response()->json(['error' => 'Une erreur est survenue lors de l\'envoi du lien.'], 500);
         }
 
-      /**
+        // Envoi du lien
+        $status = Password::sendResetLink($request->only('email'));
+
+        if ($status === Password::RESET_LINK_SENT) {
+            return $this->responseJson(
+                true,
+                'Lien de réinitialisation envoyé à votre email.'
+            );
+        }
+
+        // En cas d'échec (ex : email non envoyé)
+        return $this->responseJson(
+            false,
+            'Une erreur est survenue lors de l\'envoi du lien.',
+            ['email' => [__($status)]],
+            500
+        );
+    }
+
+
+
+    /**
      * Renvoie l'email de validation à un utilisateur.
      *
      * @param Request $request
@@ -244,5 +307,4 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'Token valide.'], 200);
     }
-
 }

@@ -18,7 +18,7 @@ class AgenceShowController extends Controller
     public function index()
     {
         try { 
-            $agences = Agence::with('adresse')->get();
+            $agences = Agence::with('adresse', 'responsable')->get();
 
             return $this->responseJson(true, 'Liste des agences récupérée avec succès.', $agences);
         } catch (\Exception $e) {
@@ -40,7 +40,7 @@ class AgenceShowController extends Controller
                 return $this->responseJson(false, 'ID invalide.', null, 400);
             }
  
-            $agence = Agence::with('adresse')->find($id);
+            $agence = Agence::with('adresse', 'responsable')->find($id);
 
             if (!$agence) {
                 return $this->responseJson(false, 'Agence non trouvée.', null, 404);
@@ -49,6 +49,27 @@ class AgenceShowController extends Controller
             return $this->responseJson(true, 'Détails de l\'agence récupérés avec succès.', $agence);
         } catch (\Exception $e) {
             return $this->responseJson(false, 'Une erreur interne est survenue.', $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Récupérer les détails d'une agence par référence.
+     *
+     * @param string $reference
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function showByReference($reference)
+    {
+        try {
+            $agence = Agence::with('adresse', 'responsable')->where('reference', $reference)->first();
+
+            if (!$agence) {
+                return $this->responseJson(false, 'Agence non trouvée avec cette référence.', null, 404);
+            }
+
+            return $this->responseJson(true, 'Agence trouvée.', $agence);
+        } catch (\Exception $e) {
+            return $this->responseJson(false, 'Erreur interne.', $e->getMessage(), 500);
         }
     }
 }
